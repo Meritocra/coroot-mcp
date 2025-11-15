@@ -1,0 +1,28 @@
+{
+  "name": "coroot-mcp",
+  "version": "0.0.1",
+  "description": "MCP server that exposes Coroot root-cause analysis and incident context as tools for LLM assistants.",
+  "license": "Proprietary",
+  "homepageUrl": "https://github.com/Meritocra/coroot-mcp",
+  "environment": {
+    "secrets": [
+      "OPENAI_API_KEY",
+      "COROOT_API_KEY"
+    ]
+  },
+  "capabilities": {
+    "tools": {
+      "listChanged": true
+    },
+    "resources": {}
+  },
+  "servers": [
+    {
+      "transport": {
+        "type": "http",
+        "url": "http://localhost:8080/mcp"
+      }
+    }
+  ]
+}
+
