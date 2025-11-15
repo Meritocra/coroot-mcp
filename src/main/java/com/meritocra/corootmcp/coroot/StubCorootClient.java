@@ -4,9 +4,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class StubCorootClient implements CorootClient {
 
 	@Override
@@ -46,4 +43,3 @@ public class StubCorootClient implements CorootClient {
 				Instant.now());
 	}
 }
-
