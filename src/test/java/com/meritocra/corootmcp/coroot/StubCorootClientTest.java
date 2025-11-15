@@ -39,4 +39,3 @@ class StubCorootClientTest {
 		assertThat(snapshot.getObservedAt()).isNotNull();
 	}
 }
-
