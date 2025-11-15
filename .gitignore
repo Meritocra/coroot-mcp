@@ -32,5 +32,10 @@ build/
 ### VS Code ###
 .vscode/
 
+# Local env files (never committed)
+.env
+.env.*
+.env.local
+
 # Local design notes (kept out of Git)
 /docs/
