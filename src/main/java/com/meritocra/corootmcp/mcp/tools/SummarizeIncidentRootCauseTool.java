@@ -22,6 +22,35 @@ public class SummarizeIncidentRootCauseTool implements McpTool {
 
 	private static final DateTimeFormatter ISO_FORMATTER = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
+	private static final String PROMPT_TEMPLATE = """
+			You are a senior SRE using Coroot's service graph, checks, metrics, logs, traces and profiles to explain incidents to engineers.
+			Summarize the incident for a human in at most %d words.
+
+			Focus on:
+			- What actually broke and why.
+			- The most likely root cause.
+			- Blast radius in terms of services and user impact.
+			- Concrete remediation steps and follow-up actions.
+
+			Incident summary:
+			ID: %s
+			Title: %s
+			Service: %s
+			Severity: %s
+
+			Suspected root cause from Coroot heuristics:
+			%s
+
+			Affected services:
+			%s
+
+			Key metrics snapshot (JSON):
+			%s
+
+			Timeline of important events:
+			%s
+			""";
+
 	private final CorootClient corootClient;
 
 	private final CorootProperties properties;
@@ -144,42 +173,20 @@ public class SummarizeIncidentRootCauseTool implements McpTool {
 
 	private String buildPrompt(IncidentContext context, int maxWords) {
 		IncidentSummary summary = context.getSummary();
-		StringBuilder builder = new StringBuilder();
+		String affectedServices = context.getAffectedServices().stream()
+				.map(service -> "- " + service)
+				.reduce((left, right) -> left + "\n" + right)
+				.orElse("(none)");
 
-		builder.append(
-				"You are a senior SRE using Coroot's service graph, checks, metrics, logs, traces and profiles to explain incidents to engineers.\n");
-		builder.append("Summarize the incident for a human in at most ").append(maxWords)
-				.append(" words.\n\n");
-		builder.append("Focus on:\n");
-		builder.append("- What actually broke and why.\n");
-		builder.append("- The most likely root cause.\n");
-		builder.append("- Blast radius in terms of services and user impact.\n");
-		builder.append("- Concrete remediation steps and follow-up actions.\n\n");
+		String timeline = context.getTimeline().stream()
+				.map(event -> "- " + event)
+				.reduce((left, right) -> left + "\n" + right)
+				.orElse("(none)");
 
-		builder.append("Incident summary:\n");
-		builder.append("ID: ").append(summary.getId()).append("\n");
-		builder.append("Title: ").append(summary.getTitle()).append("\n");
-		builder.append("Service: ").append(summary.getService()).append("\n");
-		builder.append("Severity: ").append(summary.getSeverity().name()).append("\n\n");
+		String metricsSnapshot = context.getMetricsSnapshot().toString();
 
-		builder.append("Suspected root cause from Coroot heuristics:\n");
-		builder.append(context.getSuspectedRootCause()).append("\n\n");
-
-		builder.append("Affected services:\n");
-		for (String service : context.getAffectedServices()) {
-			builder.append("- ").append(service).append("\n");
-		}
-		builder.append("\n");
-
-		builder.append("Key metrics snapshot (JSON):\n");
-		builder.append(context.getMetricsSnapshot()).append("\n\n");
-
-		builder.append("Timeline of important events:\n");
-		for (String event : context.getTimeline()) {
-			builder.append("- ").append(event).append("\n");
-		}
-
-		return builder.toString();
+		return PROMPT_TEMPLATE.formatted(maxWords, summary.getId(), summary.getTitle(), summary.getService(),
+				summary.getSeverity().name(), context.getSuspectedRootCause(), affectedServices, metricsSnapshot,
+				timeline);
 	}
 }
-
