@@ -12,7 +12,6 @@ import com.meritocra.corootmcp.config.CorootProperties;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClient;
@@ -40,7 +39,6 @@ import org.springframework.web.client.RestClient;
  * {@code X-API-Key: <coroot.api-key>} as configured in {@link CorootProperties}.
  * </p>
  */
-@Component
 public class HttpCorootClient implements CorootClient {
 
 	private final RestClient restClient;
@@ -182,4 +180,3 @@ public class HttpCorootClient implements CorootClient {
 		}
 	}
 }
-
