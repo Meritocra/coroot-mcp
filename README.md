@@ -39,7 +39,45 @@ Environment variables (12-factor style):
 
 These map to Spring Boot configuration in `src/main/resources/application.properties`.
 
-## Running locally (dev)
+## Quick start (no Coroot required)
+
+You can try the MCP server without a Coroot instance by enabling the built-in stub client profile. This returns synthetic incidents and health snapshots that are good enough for testing tool wiring.
+
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=stub-coroot
+```
+
+The MCP JSON-RPC endpoint will be available at:
+
+- `POST http://localhost:8080/mcp`
+
+From another terminal, you can send a basic `initialize` request:
+
+```bash
+curl -s http://localhost:8080/mcp \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": "init-1",
+    "method": "initialize",
+    "params": {}
+  }'
+```
+
+And list tools:
+
+```bash
+curl -s http://localhost:8080/mcp \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": "tools-1",
+    "method": "tools/list",
+    "params": {}
+  }'
+```
+
+## Running locally against Coroot (dev)
 
 ```bash
 export OPENAI_API_KEY=sk-...
@@ -54,6 +92,32 @@ The MCP JSON-RPC endpoint will be available at:
 - `POST http://localhost:8080/mcp`
 
 ## Docker / container image
+
+### Using a published image
+
+Once an image is published to a registry such as GitHub Container Registry, you can run it directly. For example, assuming:
+
+- Image: `ghcr.io/meritocra/coroot-mcp:0.1.0`
+
+Run against a real Coroot instance:
+
+```bash
+docker run --rm -p 8080:8080 \
+  -e OPENAI_API_KEY=sk-... \
+  -e COROOT_API_URL=https://coroot.your-company.com \
+  -e COROOT_DEFAULT_PROJECT_ID=production \
+  ghcr.io/meritocra/coroot-mcp:0.1.0
+```
+
+Run in stub mode (no Coroot required):
+
+```bash
+docker run --rm -p 8080:8080 \
+  -e SPRING_PROFILES_ACTIVE=stub-coroot \
+  ghcr.io/meritocra/coroot-mcp:0.1.0
+```
+
+### Building the image locally
 
 Build a container image using the provided multi-stage `Dockerfile`:
 
@@ -71,6 +135,29 @@ docker run --rm -p 8080:8080 \
   coroot-mcp:latest
 ```
 
+It is recommended to set `JAVA_OPTS` for resource limits, for example:
+
+```bash
+docker run --rm -p 8080:8080 \
+  -e JAVA_OPTS="-Xms256m -Xmx512m" \
+  -e OPENAI_API_KEY=sk-... \
+  -e COROOT_API_URL=https://coroot.your-company.com \
+  -e COROOT_DEFAULT_PROJECT_ID=production \
+  coroot-mcp:latest
+```
+
+### Docker Compose
+
+For local experiments, you can also use the provided `docker-compose.yml`:
+
+```bash
+docker compose up --build
+```
+
+By default this starts `coroot-mcp` with the `stub-coroot` profile and exposes the MCP endpoint on:
+
+- `POST http://localhost:8080/mcp`
+
 ## MCP manifest
 
 The MCP manifest is defined in `mcp.json`. It declares:
@@ -78,8 +165,37 @@ The MCP manifest is defined in `mcp.json`. It declares:
 - Server name and description.
 - HTTP transport pointing to `http://localhost:8080/mcp`.
 - Declared secrets: `OPENAI_API_KEY`, `COROOT_API_KEY`.
+- Declared non-secret environment variables: `OPENAI_MODEL`, `COROOT_API_URL`, `COROOT_DEFAULT_PROJECT_ID`.
 
-Point your MCP-compatible client (e.g. Toolhive / Toolhouse) at `mcp.json` to register this server.
+MCP-compatible clients can either:
+
+- Load the manifest from disk (e.g. `mcp.json` in a project directory), or
+- Be configured directly with the MCP HTTP endpoint URL (`http://localhost:8080/mcp`).
+
+## Using with AI coding agents
+
+This project speaks MCP over HTTP. Any MCP-aware coding assistant can talk to it once you point the client at the `/mcp` endpoint.
+
+### Codex CLI
+
+Assuming `coroot-mcp` runs on `http://localhost:8080/mcp`, add an MCP server entry in your Codex configuration, for example:
+
+```toml
+[mcp_servers.coroot-mcp]
+transport = "http"
+url = "http://localhost:8080/mcp"
+```
+
+Restart Codex CLI and list MCP servers to confirm that `coroot-mcp` is available.
+
+### Claude / Claude Code
+
+If you use a Claude-based environment that supports HTTP MCP servers, configure a new MCP server named `coroot-mcp` with:
+
+- Transport: HTTP
+- URL: `http://localhost:8080/mcp`
+
+You can then call `list_recent_incidents` and `summarize_incident_root_cause` from within that environment.
 
 ## Available tools
 

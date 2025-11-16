@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  coroot-mcp:
+    build: .
+    container_name: coroot-mcp
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-stub-coroot}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-dummy-test-key}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4.1-mini}
+      COROOT_API_URL: ${COROOT_API_URL:-https://coroot.example.com}
+      COROOT_API_KEY: ${COROOT_API_KEY:-test-key}
+      COROOT_DEFAULT_PROJECT_ID: ${COROOT_DEFAULT_PROJECT_ID:-production}
+
