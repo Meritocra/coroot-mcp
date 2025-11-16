@@ -15,4 +15,6 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 - Spring Boot 3 / Spring AI integration for summarization.
 - Dockerfile and `docker-compose.yml` for running the MCP server in a container.
 - Test suite with unit and integration tests plus JaCoCo coverage reporting.
-
+- Health and readiness endpoints exposed via Spring Boot Actuator.
+- HTTP timeouts for the Coroot HTTP client.
+- Optional bearer token authentication for `/mcp` via `MCP_AUTH_TOKEN`.

@@ -1,6 +1,10 @@
 # coroot-mcp
 
-Coroot MCP is a Model Context Protocol (MCP) server that turns your Coroot observability stack into a set of well-typed tools an LLM assistant can call for root-cause analysis.
+[![CI](https://github.com/Meritocra/coroot-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Meritocra/coroot-mcp/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Java](https://img.shields.io/badge/Java-21%2B-blue.svg)](pom.xml)
+
+Coroot MCP is a Model Context Protocol (MCP) server that turns your [Coroot](https://github.com/coroot/coroot) observability stack into a set of well-typed tools an LLM assistant can call for root-cause analysis.
 
 It is implemented as a Spring Boot 3 / Spring AI 1.1.x application and exposes a JSON-RPC 2.0 MCP endpoint over HTTP at `/mcp`.
 
@@ -12,14 +16,12 @@ The project is licensed under the MIT License.
 - Provides natural-language root-cause summaries grounded in Coroot data via Spring AI.
 - Returns compact JSON payloads for incidents and summaries so downstream tooling (postmortems, exec reports, etc.) can build on top.
 
-## Architecture and principles
+## Design
 
-- **12-factor friendly**: all secrets and environment-specific configuration are supplied via environment variables (e.g. `OPENAI_API_KEY`, `COROOT_API_URL`, `COROOT_DEFAULT_PROJECT_ID`).
-- **SOLID/KISS/DRY**:
-  - Clear separation between HTTP/MCP layer, tool abstraction, and Coroot domain client.
-  - Read-only, side-effect-free MCP tools with explicit JSON schemas.
-  - Minimal domain model for incidents and service health, reused across tools.
-- **Stateless service**: the MCP server is stateless; Coroot and the LLM are treated as external backing services.
+- Configuration is supplied via environment variables (for example `OPENAI_API_KEY`, `COROOT_API_URL`, `COROOT_DEFAULT_PROJECT_ID`).
+- The HTTP/MCP layer is separated from the Coroot client and domain model so tools stay small and focused.
+- Tools are read-only and side-effect free, returning explicit JSON schemas.
+- The MCP server is stateless; Coroot and the LLM are external backing services.
 
 ## Requirements
 
@@ -36,6 +38,7 @@ Environment variables (12-factor style):
 - `OPENAI_MODEL` – optional, defaults to `gpt-4.1-mini`.
 - `COROOT_API_URL` – base URL of your Coroot instance, defaults to `https://coroot.vitayou.io`.
 - `COROOT_DEFAULT_PROJECT_ID` – default Coroot project ID when a tool call omits it (e.g. `production`).
+- `MCP_AUTH_TOKEN` – optional bearer token required on `/mcp` when set. Clients must send `Authorization: Bearer <token>`.
 
 These map to Spring Boot configuration in `src/main/resources/application.properties`.
 
@@ -56,6 +59,7 @@ From another terminal, you can send a basic `initialize` request:
 ```bash
 curl -s http://localhost:8080/mcp \
   -H 'Content-Type: application/json' \
+  # -H 'Authorization: Bearer some-secret-token' \  # if MCP_AUTH_TOKEN is set
   -d '{
     "jsonrpc": "2.0",
     "id": "init-1",
@@ -81,6 +85,7 @@ curl -s http://localhost:8080/mcp \
 
 ```bash
 export OPENAI_API_KEY=sk-...
+export MCP_AUTH_TOKEN=some-secret-token    # optional
 export COROOT_API_URL=https://coroot.your-company.com
 export COROOT_DEFAULT_PROJECT_ID=production
 
@@ -90,6 +95,10 @@ export COROOT_DEFAULT_PROJECT_ID=production
 The MCP JSON-RPC endpoint will be available at:
 
 - `POST http://localhost:8080/mcp`
+
+If `MCP_AUTH_TOKEN` is set, clients must send:
+
+- `Authorization: Bearer <token>`
 
 ## Docker / container image
 
@@ -104,6 +113,7 @@ Run against a real Coroot instance:
 ```bash
 docker run --rm -p 8080:8080 \
   -e OPENAI_API_KEY=sk-... \
+  -e MCP_AUTH_TOKEN=some-secret-token \
   -e COROOT_API_URL=https://coroot.your-company.com \
   -e COROOT_DEFAULT_PROJECT_ID=production \
   ghcr.io/meritocra/coroot-mcp:0.1.0
@@ -113,6 +123,7 @@ Run in stub mode (no Coroot required):
 
 ```bash
 docker run --rm -p 8080:8080 \
+  -e MCP_AUTH_TOKEN=some-secret-token \
   -e SPRING_PROFILES_ACTIVE=stub-coroot \
   ghcr.io/meritocra/coroot-mcp:0.1.0
 ```
@@ -236,3 +247,9 @@ To run tests and generate a coverage report:
 ```
 
 JaCoCo HTML reports will be generated under `target/site/jacoco`.
+
+## Links
+
+- Coroot website: https://coroot.com
+- Coroot on GitHub: https://github.com/coroot/coroot
+- MCP spec and tooling: https://modelcontextprotocol.io

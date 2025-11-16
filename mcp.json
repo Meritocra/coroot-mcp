@@ -7,7 +7,8 @@
   "environment": {
     "secrets": [
       "OPENAI_API_KEY",
-      "COROOT_API_KEY"
+      "COROOT_API_KEY",
+      "MCP_AUTH_TOKEN"
     ],
     "vars": [
       "OPENAI_MODEL",
