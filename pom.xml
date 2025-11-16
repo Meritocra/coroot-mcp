@@ -10,12 +10,16 @@
 	</parent>
 	<groupId>com.meritocra</groupId>
 	<artifactId>coroot-mcp</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1.0</version>
 	<name>coroot-mcp</name>
-	<description>Demo project for Spring Boot</description>
-	<url/>
+	<description>MCP server that exposes Coroot incidents and root-cause context as tools.</description>
+	<url>https://github.com/Meritocra/coroot-mcp</url>
 	<licenses>
-		<license/>
+		<license>
+			<name>MIT License</name>
+			<url>https://opensource.org/licenses/MIT</url>
+			<distribution>repo</distribution>
+		</license>
 	</licenses>
 	<developers>
 		<developer/>
