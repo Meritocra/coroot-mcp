@@ -12,6 +12,7 @@ import com.meritocra.corootmcp.config.CorootProperties;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClient;
@@ -52,8 +53,13 @@ public class HttpCorootClient implements CorootClient {
 			throw new IllegalStateException("coroot.api-key (COROOT_API_KEY) must be configured");
 		}
 
+		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+		requestFactory.setConnectTimeout(5_000);
+		requestFactory.setReadTimeout(10_000);
+
 		this.properties = properties;
 		this.restClient = RestClient.builder()
+				.requestFactory(requestFactory)
 				.baseUrl(properties.getApiUrl().toString())
 				.defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
 				.defaultHeader("X-API-Key", properties.getApiKey())
