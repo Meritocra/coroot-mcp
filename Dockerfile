@@ -14,9 +14,8 @@ FROM eclipse-temurin:21-jre
 ENV JAVA_OPTS=""
 WORKDIR /app
 
-COPY --from=build /workspace/target/coroot-mcp-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /workspace/target/coroot-mcp-0.1.0.jar app.jar
 
 EXPOSE 8080
 
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
-
