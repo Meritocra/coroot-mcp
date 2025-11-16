@@ -1,39 +1,68 @@
 package com.meritocra.corootmcp.mcp;
 
+import java.util.concurrent.TimeUnit;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
+
+import org.springframework.util.StringUtils;
 
 @RestController
 public class McpController {
+
+	private static final Logger logger = LoggerFactory.getLogger(McpController.class);
 
 	private final McpToolRegistry toolRegistry;
 
 	private final ObjectMapper objectMapper;
 
-	public McpController(McpToolRegistry toolRegistry, ObjectMapper objectMapper) {
+	private final String authToken;
+
+	public McpController(McpToolRegistry toolRegistry, ObjectMapper objectMapper,
+			@org.springframework.beans.factory.annotation.Value("${mcp.auth-token:}") String authToken) {
 		this.toolRegistry = toolRegistry;
 		this.objectMapper = objectMapper;
+		this.authToken = authToken;
 	}
 
 	@PostMapping(path = "/mcp", consumes = "application/json", produces = "application/json")
-	public ResponseEntity<ObjectNode> handle(@RequestBody ObjectNode request) {
+	public ResponseEntity<ObjectNode> handle(@RequestBody ObjectNode request,
+			@RequestHeader(name = "Authorization", required = false) String authorizationHeader) {
+		if (StringUtils.hasText(this.authToken)) {
+			String expected = "Bearer " + this.authToken;
+			if (!expected.equals(authorizationHeader)) {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+			}
+		}
+
+		long start = System.nanoTime();
 		String method = request.path("method").asText();
 		ObjectNode response = objectMapper.createObjectNode();
 		response.put("jsonrpc", "2.0");
 		response.set("id", request.get("id"));
 
+		String toolName = null;
+
 		try {
 			switch (method) {
 				case "initialize" -> response.set("result", handleInitialize());
 				case "tools/list" -> response.set("result", handleToolsList());
-				case "tools/call" -> response.set("result", handleToolsCall(request.path("params")));
+				case "tools/call" -> {
+					toolName = request.path("params").path("name").asText(null);
+					response.set("result", handleToolsCall(request.path("params")));
+				}
 				default -> response.set("error", error(-32601, "Method not found: " + method));
 			}
 		}
@@ -43,6 +72,9 @@ public class McpController {
 		catch (Exception ex) {
 			response.set("error", error(-32603, "Internal error: " + ex.getMessage()));
 		}
+
+		long durationMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
+		logger.info("mcpRequest method={} tool={} durationMs={}", method, toolName, durationMs);
 
 		return ResponseEntity.ok(response);
 	}

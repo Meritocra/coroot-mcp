@@ -81,7 +81,13 @@ public class ListRecentIncidentsTool implements McpTool {
 		String severityText = arguments.path("minimumSeverity").asText(IncidentSeverity.WARNING.name());
 		IncidentSeverity minimumSeverity = IncidentSeverity.valueOf(severityText);
 
-		int limit = arguments.path("limit").asInt(10);
+		int limit = arguments.path("limit").isMissingNode() ? 10 : arguments.path("limit").asInt(10);
+		if (limit < 1) {
+			limit = 1;
+		}
+		if (limit > 50) {
+			limit = 50;
+		}
 
 		List<IncidentSummary> incidents = corootClient.listRecentIncidents(projectId, minimumSeverity, limit);
 
@@ -112,4 +118,3 @@ public class ListRecentIncidentsTool implements McpTool {
 		return result;
 	}
 }
-
