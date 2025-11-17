@@ -4,6 +4,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Java](https://img.shields.io/badge/Java-21%2B-blue.svg)](pom.xml)
 
+[Docs](#what-this-mcp-server-does) · [Coroot](https://coroot.com) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md)
+
 Coroot MCP is a Model Context Protocol (MCP) server that turns your [Coroot](https://github.com/coroot/coroot) observability stack into a set of well-typed tools an LLM assistant can call for root-cause analysis.
 
 It is implemented as a Spring Boot 3 / Spring AI 1.1.x application and exposes a JSON-RPC 2.0 MCP endpoint over HTTP at `/mcp`.
@@ -27,6 +29,12 @@ The MCP JSON-RPC endpoint will be available at:
 - Exposes Coroot [incidents](https://docs.coroot.com/alerting/incidents/) and [application health summaries](https://github.com/coroot/coroot#application-health-summary) as MCP tools that an AI assistant can call.
 - Provides natural-language root-cause summaries grounded in Coroot data via [AI-powered Root Cause Analysis](https://docs.coroot.com/ai/) concepts, implemented here with Spring AI.
 - Returns compact JSON payloads for incidents and summaries so downstream tooling (postmortems, executive reports, dashboards, etc.) can build on top.
+
+### Use cases
+
+- Triage Coroot incidents from an AI-enabled IDE or CLI (Codex, Claude, etc.) without leaving your editor.
+- Generate clear, executive-friendly summaries of incidents for postmortems, status updates, or incident review meetings.
+- Enrich runbooks, dashboards, or other internal tools with machine-readable incident context from Coroot.
 
 ## Design
 
