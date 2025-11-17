@@ -71,4 +71,20 @@ public class StubCorootClient implements CorootClient {
 
 		return List.of(risk);
 	}
+
+	@Override
+	public List<NodeOverviewEntry> listNodesOverview(String projectId) {
+		NodeOverviewEntry node = new NodeOverviewEntry(projectId, "node-1", "cluster-1", "OK", 5, 10, "3d",
+				List.of("10.0.0.10"), List.of("203.0.113.10"), 55.0, 62.0, 30.0, 40.0);
+
+		return List.of(node);
+	}
+
+	@Override
+	public List<DeploymentOverviewEntry> listDeploymentsOverview(String projectId) {
+		DeploymentOverviewEntry deployment = new DeploymentOverviewEntry(projectId, "checkout-service", "cluster-1",
+				"1.24.0", "COMPLETED", "2h", List.of("COMPLETED: rollout finished"));
+
+		return List.of(deployment);
+	}
 }

@@ -76,4 +76,24 @@ class StubCorootClientTest {
 		assertThat(risks.get(0).getService()).isNotBlank();
 		assertThat(risks.get(0).getSeverity()).isNotBlank();
 	}
+
+	@Test
+	void givenProject_whenListingNodesOverview_thenReturnsNodes() {
+		// when
+		List<NodeOverviewEntry> nodes = client.listNodesOverview("production");
+
+		// then
+		assertThat(nodes).isNotEmpty();
+		assertThat(nodes.get(0).getName()).isNotBlank();
+	}
+
+	@Test
+	void givenProject_whenListingDeploymentsOverview_thenReturnsDeployments() {
+		// when
+		List<DeploymentOverviewEntry> deployments = client.listDeploymentsOverview("production");
+
+		// then
+		assertThat(deployments).isNotEmpty();
+		assertThat(deployments.get(0).getService()).isNotBlank();
+	}
 }
