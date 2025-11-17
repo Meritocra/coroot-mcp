@@ -24,6 +24,42 @@ The MCP JSON-RPC endpoint will be available at:
 
 - `POST http://localhost:8080/mcp`
 
+## Quick start (real Coroot)
+
+To point `coroot-mcp` at a real Coroot instance:
+
+1. Create a local `.env.local` file in this repo (gitignored) with:
+
+   ```bash
+   COROOT_API_URL=https://coroot.your-company.com
+   COROOT_API_KEY=<your Coroot API key>
+   COROOT_DEFAULT_PROJECT_ID=production
+
+   OPENAI_API_KEY=<your OpenAI/OpenAI-compatible key>
+   OPENAI_MODEL=gpt-4.1-mini
+   ```
+
+2. Start the server:
+
+   ```bash
+   set -a
+   source .env.local
+   set +a
+
+   ./mvnw spring-boot:run
+   ```
+
+3. Verify it is running:
+
+   ```bash
+   curl -s http://localhost:8080/actuator/health
+   curl -s http://localhost:8080/mcp \
+     -H 'Content-Type: application/json' \
+     -d '{"jsonrpc":"2.0","id":"init-1","method":"initialize","params":{}}'
+   ```
+
+4. Point your MCP-aware client (Codex, Claude, Toolhive, etc.) at `http://localhost:8080/mcp` and start using tools like `list_recent_incidents` and `investigate_incident`.
+
 ## Using with AI coding agents
 
 This project speaks MCP over HTTP. Any MCP-aware coding assistant can talk to it once you point the client at the `/mcp` endpoint.
