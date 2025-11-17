@@ -66,7 +66,7 @@ To point `coroot-mcp` at a real Coroot instance:
 
 This project speaks MCP over HTTP. Any MCP-aware coding assistant can talk to it once you point the client at the `/mcp` endpoint.
 
-### Codex CLI
+### Codex CLI (local MCP)
 
 Assuming `coroot-mcp` runs on `http://localhost:8080/mcp`, add an MCP server entry in your Codex configuration, for example:
 
@@ -78,7 +78,7 @@ args = ["-y", "mcp-remote", "http://localhost:8080/mcp", "--allow-http", "--tran
 
 Restart Codex CLI and list MCP servers to confirm that `coroot-mcp` is available.
 
-### Claude / Claude Code
+### Claude / Claude Code (HTTP MCP)
 
 If you use a Claude-based environment that supports HTTP MCP servers, configure a new MCP server named `coroot-mcp` with:
 
@@ -86,6 +86,60 @@ If you use a Claude-based environment that supports HTTP MCP servers, configure 
 - URL: `http://localhost:8080/mcp`
 
 You can then call `list_recent_incidents` and `summarize_incident_root_cause` from within that environment.
+
+## Configuration examples (JSON)
+
+Some tools and IDEs prefer JSON-based MCP configuration files. The snippets below mirror what many MCP-aware agents expect as of late 2025; adjust paths and secrets to your environment.
+
+### Generic `.mcp.json` (project-level)
+
+You can keep a project-scoped MCP configuration in `.mcp.json` at the root of your repo:
+
+```jsonc
+{
+  "mcpServers": {
+    "coroot-mcp": {
+      "type": "http",
+      "url": "http://localhost:8080/mcp"
+    }
+  }
+}
+```
+
+Some clients also support an `env` block here; if yours does, you can document expected variables:
+
+```jsonc
+{
+  "mcpServers": {
+    "coroot-mcp": {
+      "type": "http",
+      "url": "http://localhost:8080/mcp",
+      "env": {
+        "OPENAI_API_KEY": "sk-…",
+        "COROOT_API_URL": "https://coroot.your-company.com",
+        "COROOT_DEFAULT_PROJECT_ID": "production"
+      }
+    }
+  }
+}
+```
+
+### Claude JSON config (`~/.claude.json`)
+
+Claude CLI and Claude Desktop both read MCP servers from JSON config files. A minimal global configuration looks like:
+
+```jsonc
+{
+  "mcpServers": {
+    "coroot-mcp": {
+      "type": "http",
+      "url": "http://localhost:8080/mcp"
+    }
+  }
+}
+```
+
+If you prefer to scope `coroot-mcp` to a single folder, add the same `mcpServers` block under the project entry in `~/.claude.json` or in a per-project settings file (see Claude docs for the latest supported locations).
 
 ## What this MCP server does
 
