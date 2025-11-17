@@ -14,7 +14,7 @@ FROM eclipse-temurin:21-jre
 ENV JAVA_OPTS=""
 WORKDIR /app
 
-COPY --from=build /workspace/target/coroot-mcp-0.1.0.jar app.jar
+COPY --from=build /workspace/target/coroot-mcp-0.2.0.jar app.jar
 
 EXPOSE 8080
 
