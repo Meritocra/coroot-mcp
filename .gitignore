@@ -39,3 +39,6 @@ build/
 
 # Local design notes (kept out of Git)
 /docs/
+
+# Local admin-only MCP manifest (never committed)
+mcp-admin.json
