@@ -199,6 +199,8 @@ The MCP server exposes tools via `tools/list` and `tools/call`. Currently implem
 - `summarize_incident_root_cause`
   - Generates a natural-language explanation of an incident’s likely root cause, blast radius, and remediation steps.
   - Returns both human-readable text and a structured JSON representation of the incident context.
+- `get_service_health`
+  - Returns a compact health snapshot for a single Coroot service, aligned with the Application Health Summary indicators.
 
 Both tools are read-only and safe to expose to assistants.
 
