@@ -25,6 +25,10 @@ public interface CorootClient {
 
 	Map<String, Object> getLogsOverview(String projectId, String query);
 
+	Map<String, Object> getApplicationTracing(String projectId, String applicationId, int windowMinutes);
+
+	Map<String, Object> getApplicationLogs(String projectId, String applicationId, int windowMinutes, int maxEntries);
+
 	Map<String, Object> getCostsOverview(String projectId);
 
 	Map<String, Object> getSloOverview(String projectId);

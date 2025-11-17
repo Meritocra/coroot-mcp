@@ -420,6 +420,75 @@ public class HttpCorootClient implements CorootClient {
 
 	@Override
 	@SuppressWarnings("unchecked")
+	public Map<String, Object> getApplicationTracing(String projectId, String applicationId, int windowMinutes) {
+		Assert.hasText(projectId, "projectId must not be empty");
+		Assert.hasText(applicationId, "applicationId must not be empty");
+
+		int window = windowMinutes > 0 ? windowMinutes : 30;
+		if (window > 24 * 60) {
+			window = 24 * 60;
+		}
+
+		Instant to = Instant.now();
+		Instant from = to.minusSeconds(window * 60L);
+
+		Map<String, Object> response = restClient.get()
+				.uri(uriBuilder -> uriBuilder
+						.path("/api/project/{projectId}/app/{app}/tracing")
+						.queryParam("from", from.toEpochMilli())
+						.queryParam("to", to.toEpochMilli())
+						.build(projectId, applicationId))
+				.retrieve()
+				.body(Map.class);
+
+		if (response == null) {
+			return Map.of();
+		}
+
+		return response;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> getApplicationLogs(String projectId, String applicationId, int windowMinutes,
+			int maxEntries) {
+		Assert.hasText(projectId, "projectId must not be empty");
+		Assert.hasText(applicationId, "applicationId must not be empty");
+
+		int window = windowMinutes > 0 ? windowMinutes : 30;
+		if (window > 24 * 60) {
+			window = 24 * 60;
+		}
+
+		int limit = maxEntries > 0 ? maxEntries : 100;
+		if (limit > 100) {
+			limit = 100;
+		}
+
+		Instant to = Instant.now();
+		Instant from = to.minusSeconds(window * 60L);
+
+		String queryJson = "{\"limit\":" + limit + ",\"view\":\"messages\"}";
+
+		Map<String, Object> response = restClient.get()
+				.uri(uriBuilder -> uriBuilder
+						.path("/api/project/{projectId}/app/{app}/logs")
+						.queryParam("from", from.toEpochMilli())
+						.queryParam("to", to.toEpochMilli())
+						.queryParam("query", queryJson)
+						.build(projectId, applicationId))
+				.retrieve()
+				.body(Map.class);
+
+		if (response == null) {
+			return Map.of();
+		}
+
+		return response;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
 	public Map<String, Object> getCostsOverview(String projectId) {
 		Assert.hasText(projectId, "projectId must not be empty");
 

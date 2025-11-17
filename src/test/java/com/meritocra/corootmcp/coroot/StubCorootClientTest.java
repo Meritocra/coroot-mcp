@@ -137,4 +137,28 @@ class StubCorootClientTest {
 		assertThat(overview).isNotEmpty();
 		assertThat(overview.get("projectId")).isEqualTo("production");
 	}
+
+	@Test
+	void givenApplication_whenGettingApplicationTracing_thenReturnsSpans() {
+		// when
+		Map<String, Object> tracing = client.getApplicationTracing("production",
+				"cluster:ns:Deployment:checkout-service", 30);
+
+		// then
+		assertThat(tracing.get("projectId")).isEqualTo("production");
+		assertThat(tracing.get("applicationId")).isEqualTo("cluster:ns:Deployment:checkout-service");
+		assertThat(tracing.get("spans")).isInstanceOf(List.class);
+	}
+
+	@Test
+	void givenApplication_whenGettingApplicationLogs_thenReturnsEntries() {
+		// when
+		Map<String, Object> logs = client.getApplicationLogs("production",
+				"cluster:ns:Deployment:checkout-service", 30, 50);
+
+		// then
+		assertThat(logs.get("projectId")).isEqualTo("production");
+		assertThat(logs.get("applicationId")).isEqualTo("cluster:ns:Deployment:checkout-service");
+		assertThat(logs.get("entries")).isInstanceOf(List.class);
+	}
 }

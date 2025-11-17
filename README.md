@@ -61,6 +61,31 @@ You can then call `list_recent_incidents` and `summarize_incident_root_cause` fr
 - Generate clear, executive-friendly summaries of incidents for postmortems, status updates, or incident review meetings.
 - Enrich runbooks, dashboards, or other internal tools with machine-readable incident context from Coroot.
 
+## Available tools
+
+The MCP server exposes tools via `tools/list` and `tools/call`.
+
+| MCP tool                    | What it does                                                                                                      | Coroot feature                                                                 |
+|----------------------------|--------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+| `list_projects`            | Returns the Coroot projects the current API key can access.                                                       | [Projects](https://docs.coroot.com/getting-started/projects/) visible in the Coroot UI. |
+| `list_recent_incidents`    | Lists recent incidents with id, title, service, severity, and timestamps, with optional filters.                  | [Incidents](https://docs.coroot.com/alerting/incidents/).                     |
+| `get_incident_details`     | Returns detailed incident context (summary, suspected root cause, affected services, metrics, timeline).          | Incident detail view in the Coroot UI.                                        |
+| `summarize_incident_root_cause` | Generates a natural-language explanation of an incident’s likely root cause, blast radius, and remediation steps. | [AI-powered Root Cause Analysis](https://docs.coroot.com/ai/).                |
+| `investigate_incident`     | Performs a full incident investigation and returns an RCA summary plus a structured JSON payload.                | Incidents, AI RCA, SLOs, and related overviews in Coroot.                     |
+| `get_applications_overview`| Returns an overview of application health for a project (per‑service status and key indicators).                  | [Application Health Summary](https://github.com/coroot/coroot#application-health-summary). |
+| `get_service_health`       | Returns a compact health snapshot for a single service, including key indicators.                                 | Per‑service health indicators; see [Service inspections](https://docs.coroot.com/inspections/services/). |
+| `get_nodes_overview`       | Returns an overview of node health for a project (CPU, memory, network, disk, private/public IPs).               | Nodes section of the [Overview](https://docs.coroot.com/overview).           |
+| `get_deployments_overview` | Returns recent deployments, including service, version, status, age, and a concise event summary.                | [Deployment tracking](https://docs.coroot.com/inspections/deployment-tracking). |
+| `get_risks_overview`       | Returns a summary of risks for a project, including exposure (IPs, ports) and availability information.          | [Risk overview](https://docs.coroot.com/risks/overview).                      |
+| `get_traces_overview`      | Returns a tracing overview for a project, optionally filtered by a query string (service, endpoint, etc.).       | [Tracing overview](https://docs.coroot.com/tracing/overview).                |
+| `get_application_traces`   | Returns recent spans for a single application over a bounded time window, summarised for analysis.               | Application tracing view in Coroot’s tracing UI.                              |
+| `get_logs_overview`        | Returns a logs overview for a project, optionally filtered by a log query string.                                | [Logs overview](https://docs.coroot.com/logs/overview).                      |
+| `get_application_logs`     | Returns recent log entries for a single application over a bounded time window, with a severity breakdown.       | Application logs view in Coroot’s logs UI.                                    |
+| `get_costs_overview`       | Returns a cost overview for nodes and applications in a project.                                                 | [Costs overview](https://docs.coroot.com/costs/overview).                    |
+| `get_slo_overview`         | Returns SLO availability and latency objectives at project and per‑service level.                               | [SLOs](https://docs.coroot.com/slo/).                                        |
+
+All tools are read-only and safe to expose to assistants by default.
+
 ## Design
 
 - Configuration is supplied via environment variables (for example `OPENAI_API_KEY`, `COROOT_API_URL`, `COROOT_DEFAULT_PROJECT_ID`).
@@ -188,28 +213,6 @@ MCP-compatible clients can either:
 
 - Load the manifest from disk (e.g. `mcp.json` in a project directory), or
 - Be configured directly with the MCP HTTP endpoint URL (`http://localhost:8080/mcp`).
-
-## Available tools
-
-The MCP server exposes tools via `tools/list` and `tools/call`.
-
-| MCP tool                    | What it does                                                                                                      | Coroot feature                                                                 |
-|----------------------------|--------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-| `list_projects`            | Returns the Coroot projects the current API key can access.                                                       | [Projects](https://docs.coroot.com/getting-started/projects/) visible in the Coroot UI. |
-| `list_recent_incidents`    | Lists recent incidents with id, title, service, severity, and timestamps, with optional filters.                  | [Incidents](https://docs.coroot.com/alerting/incidents/).                     |
-| `get_incident_details`     | Returns detailed incident context (summary, suspected root cause, affected services, metrics, timeline).          | Incident detail view in the Coroot UI.                                        |
-| `summarize_incident_root_cause` | Generates a natural-language explanation of an incident’s likely root cause, blast radius, and remediation steps. | [AI-powered Root Cause Analysis](https://docs.coroot.com/ai/).                |
-| `get_applications_overview`| Returns an overview of application health for a project (per‑service status and key indicators).                  | [Application Health Summary](https://github.com/coroot/coroot#application-health-summary). |
-| `get_service_health`       | Returns a compact health snapshot for a single service, including key indicators.                                 | Per‑service health indicators; see [Service inspections](https://docs.coroot.com/inspections/services/). |
-| `get_risks_overview`       | Returns a summary of risks for a project, including exposure (IPs, ports) and availability information.          | [Risk overview](https://docs.coroot.com/risks/overview).                      |
-| `get_nodes_overview`       | Returns an overview of node health for a project (CPU, memory, network, disk, private/public IPs).               | Nodes section of the [Overview](https://docs.coroot.com/overview).           |
-| `get_deployments_overview` | Returns recent deployments, including service, version, status, age, and a concise event summary.                | [Deployment tracking](https://docs.coroot.com/inspections/deployment-tracking). |
-| `get_traces_overview`      | Returns a tracing overview for a project, optionally filtered by a query string (service, endpoint, etc.).       | [Tracing overview](https://docs.coroot.com/tracing/overview).                |
-| `get_logs_overview`        | Returns a logs overview for a project, optionally filtered by a log query string.                                | [Logs overview](https://docs.coroot.com/logs/overview).                      |
-| `get_costs_overview`       | Returns a cost overview for nodes and applications in a project.                                                 | [Costs overview](https://docs.coroot.com/costs/overview).                    |
-| `get_slo_overview`         | Returns SLO availability and latency objectives at project and per‑service level.                               | [SLOs](https://docs.coroot.com/slo/).                                        |
-
-All tools are read-only and safe to expose to assistants.
 
 ## Using with Toolhive (example)
 
