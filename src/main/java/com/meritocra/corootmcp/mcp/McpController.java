@@ -49,6 +49,16 @@ public class McpController {
 
 		long start = System.nanoTime();
 		String method = request.path("method").asText();
+
+		// JSON-RPC notifications like `notifications/initialized` are fire-and-forget.
+		// MCP clients do not expect any JSON-RPC response here; returning a body can
+		// confuse streaming HTTP transports. Accept the notification and return an
+		// empty 200 response.
+		if ("notifications/initialized".equals(method)) {
+			logger.info("mcpNotification method=notifications/initialized");
+			return ResponseEntity.ok().build();
+		}
+
 		ObjectNode response = objectMapper.createObjectNode();
 		response.put("jsonrpc", "2.0");
 		response.set("id", request.get("id"));
@@ -63,12 +73,7 @@ public class McpController {
 					toolName = request.path("params").path("name").asText(null);
 					response.set("result", handleToolsCall(request.path("params")));
 				}
-				case "initialized", "notifications/initialized" -> {
-					// JSON-RPC notifications like `notifications/initialized` are no-ops in MCP.
-					// Return an empty result instead of an error so clients don't treat this as
-					// handshake failure.
-					response.set("result", objectMapper.createObjectNode());
-				}
+				case "initialized" -> response.set("result", objectMapper.createObjectNode());
 				default -> response.set("error", error(-32601, "Method not found: " + method));
 			}
 		}
