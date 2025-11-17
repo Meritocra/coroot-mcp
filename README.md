@@ -72,8 +72,8 @@ Assuming `coroot-mcp` runs on `http://localhost:8080/mcp`, add an MCP server ent
 
 ```toml
 [mcp_servers.coroot-mcp]
-transport = "http"
-url = "http://localhost:8080/mcp"
+command = "npx"
+args = ["-y", "mcp-remote", "http://localhost:8080/mcp", "--allow-http", "--transport", "http-first"]
 ```
 
 Restart Codex CLI and list MCP servers to confirm that `coroot-mcp` is available.
@@ -82,7 +82,7 @@ Restart Codex CLI and list MCP servers to confirm that `coroot-mcp` is available
 
 If you use a Claude-based environment that supports HTTP MCP servers, configure a new MCP server named `coroot-mcp` with:
 
-- Transport: HTTP
+- Type: HTTP
 - URL: `http://localhost:8080/mcp`
 
 You can then call `list_recent_incidents` and `summarize_incident_root_cause` from within that environment.
