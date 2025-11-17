@@ -10,38 +10,6 @@ It is implemented as a Spring Boot 3 / Spring AI 1.1.x application and exposes a
 
 The project is licensed under the MIT License.
 
-## What this MCP server does
-
-- Exposes Coroot incidents and service health as MCP tools that an AI assistant can call.
-- Provides natural-language root-cause summaries grounded in Coroot data via Spring AI.
-- Returns compact JSON payloads for incidents and summaries so downstream tooling (postmortems, exec reports, etc.) can build on top.
-
-## Design
-
-- Configuration is supplied via environment variables (for example `OPENAI_API_KEY`, `COROOT_API_URL`, `COROOT_DEFAULT_PROJECT_ID`).
-- The HTTP/MCP layer is separated from the Coroot client and domain model so tools stay small and focused.
-- Tools are read-only and side-effect free, returning explicit JSON schemas.
-- The MCP server is stateless; Coroot and the LLM are external backing services.
-
-## Requirements
-
-- Java 21+
-- Maven 3.9+
-- A running Coroot instance (for production use)
-- An OpenAI-compatible API key (for Spring AI)
-
-## Configuration
-
-Environment variables (12-factor style):
-
-- `OPENAI_API_KEY` – API key used by Spring AI to talk to the OpenAI-compatible model.
-- `OPENAI_MODEL` – optional, defaults to `gpt-4.1-mini`.
-- `COROOT_API_URL` – base URL of your Coroot instance, defaults to `https://coroot.vitayou.io`.
-- `COROOT_DEFAULT_PROJECT_ID` – default Coroot project ID when a tool call omits it (e.g. `production`).
-- `MCP_AUTH_TOKEN` – optional bearer token required on `/mcp` when set. Clients must send `Authorization: Bearer <token>`.
-
-These map to Spring Boot configuration in `src/main/resources/application.properties`.
-
 ## Quick start (no Coroot required)
 
 You can try the MCP server without a Coroot instance by enabling the built-in stub client profile. This returns synthetic incidents and health snapshots that are good enough for testing tool wiring.
@@ -80,6 +48,38 @@ curl -s http://localhost:8080/mcp \
     "params": {}
   }'
 ```
+
+## What this MCP server does
+
+- Exposes Coroot [incidents](https://docs.coroot.com/alerting/incidents/) and [application health summaries](https://github.com/coroot/coroot#application-health-summary) as MCP tools that an AI assistant can call.
+- Provides natural-language root-cause summaries grounded in Coroot data via [AI-powered Root Cause Analysis](https://docs.coroot.com/ai/) concepts, implemented here with Spring AI.
+- Returns compact JSON payloads for incidents and summaries so downstream tooling (postmortems, executive reports, dashboards, etc.) can build on top.
+
+## Design
+
+- Configuration is supplied via environment variables (for example `OPENAI_API_KEY`, `COROOT_API_URL`, `COROOT_DEFAULT_PROJECT_ID`).
+- The HTTP/MCP layer is separated from the Coroot client and domain model so tools stay small and focused.
+- Tools are read-only and side-effect free, returning explicit JSON schemas.
+- The MCP server is stateless; Coroot and the LLM are external backing services.
+
+## Requirements
+
+- Java 21+
+- Maven 3.9+
+- A running Coroot instance (for production use)
+- An OpenAI-compatible API key (for Spring AI)
+
+## Configuration
+
+Environment variables (12-factor style):
+
+- `OPENAI_API_KEY` – API key used by Spring AI to talk to the OpenAI-compatible model.
+- `OPENAI_MODEL` – optional, defaults to `gpt-4.1-mini`.
+- `COROOT_API_URL` – base URL of your Coroot instance, defaults to `https://coroot.vitayou.io`.
+- `COROOT_DEFAULT_PROJECT_ID` – default Coroot project ID when a tool call omits it (e.g. `production`).
+- `MCP_AUTH_TOKEN` – optional bearer token required on `/mcp` when set. Clients must send `Authorization: Bearer <token>`.
+
+These map to Spring Boot configuration in `src/main/resources/application.properties`.
 
 ## Running locally against Coroot (dev)
 
@@ -233,20 +233,6 @@ Both tools are read-only and safe to expose to assistants.
    - “Explain the root cause of incident `inc-1` and suggest next steps.”
 
 Toolhive will call the MCP tools under the hood and present their outputs.
-
-## Testing and quality
-
-- Uses JUnit + Spring Boot Test for unit and integration tests.
-- JaCoCo is configured to generate coverage reports; target coverage is 60%+ across unit and integration tests.
-- Code is structured to keep tests fast and deterministic (no real calls to OpenAI or Coroot in test scope).
-
-To run tests and generate a coverage report:
-
-```bash
-./mvnw test
-```
-
-JaCoCo HTML reports will be generated under `target/site/jacoco`.
 
 ## Links
 
