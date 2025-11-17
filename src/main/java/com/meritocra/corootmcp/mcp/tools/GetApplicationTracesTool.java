@@ -62,8 +62,8 @@ public class GetApplicationTracesTool implements McpTool {
 		maxSpans.put("description",
 				"Maximum number of spans to return, capped at " + MAX_SPANS_CAP + ".");
 
-		ObjectNode required = schema.putArray("required").addObject();
-		required.put("0", "applicationId");
+		ArrayNode required = schema.putArray("required");
+		required.add("applicationId");
 
 		schema.put("additionalProperties", false);
 
@@ -175,4 +175,3 @@ public class GetApplicationTracesTool implements McpTool {
 	}
 
 }
-
