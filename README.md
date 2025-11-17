@@ -208,7 +208,7 @@ The MCP server exposes tools via `tools/list` and `tools/call`. Currently implem
 - `get_service_health`
   - Returns a compact health snapshot for a single Coroot service, aligned with the Application Health Summary indicators.
 
-Both tools are read-only and safe to expose to assistants.
+All tools are read-only and safe to expose to assistants.
 
 ## Using with Toolhive (example)
 
