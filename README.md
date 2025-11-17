@@ -191,22 +191,16 @@ MCP-compatible clients can either:
 
 ## Available tools
 
-The MCP server exposes tools via `tools/list` and `tools/call`. Currently implemented:
+The MCP server exposes tools via `tools/list` and `tools/call`.
 
-- `list_recent_incidents`
-  - Returns a JSON array of recent incidents with id, title, service, severity, and timestamps.
-  - Accepts optional filters: project ID, minimum severity, and result limit.
-- `list_projects`
-  - Returns a JSON array of Coroot projects that the current API key can access, matching the Coroot projects visible in the UI for the current user.
-- `get_applications_overview`
-  - Returns an overview of application health for a Coroot project, aligned with the Application Health Summary view surfaced in the Coroot UI.
-- `get_incident_details`
-  - Returns detailed Coroot incident context (summary, suspected root cause, affected services, metrics, and timeline) as described in the incidents documentation.
-- `summarize_incident_root_cause`
-  - Generates a natural-language explanation of an incident’s likely root cause, blast radius, and remediation steps.
-  - Returns both human-readable text and a structured JSON representation of the incident context.
-- `get_service_health`
-  - Returns a compact health snapshot for a single Coroot service, aligned with the Application Health Summary indicators.
+| MCP tool                    | What it does                                                                                                      | Coroot feature                                                                 |
+|----------------------------|--------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+| `list_projects`            | Returns the Coroot projects the current API key can access.                                                       | Projects visible in the Coroot UI for the current user.                       |
+| `list_recent_incidents`    | Lists recent incidents with id, title, service, severity, and timestamps, with optional filters.                  | [Incidents](https://docs.coroot.com/alerting/incidents/).                     |
+| `get_incident_details`     | Returns detailed incident context (summary, suspected root cause, affected services, metrics, timeline).          | Incident detail view in Coroot.                                               |
+| `summarize_incident_root_cause` | Generates a natural-language explanation of an incident’s likely root cause, blast radius, and remediation steps. | Coroot’s AI-powered RCA concepts.                                             |
+| `get_applications_overview`| Returns an overview of application health for a project (per‑service status and key indicators).                  | Application Health Summary in the Coroot UI.                                  |
+| `get_service_health`       | Returns a compact health snapshot for a single service, including key indicators.                                 | Per‑service health indicators (latency, errors, instances, etc.).            |
 
 All tools are read-only and safe to expose to assistants.
 
