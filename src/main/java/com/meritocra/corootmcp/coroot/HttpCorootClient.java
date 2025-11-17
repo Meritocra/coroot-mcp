@@ -129,18 +129,34 @@ public class HttpCorootClient implements CorootClient {
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<ProjectSummary> listProjects() {
-		Map<String, Object> response = restClient.get()
-				.uri("/api/user")
-				.retrieve()
-				.body(Map.class);
-
-		List<Map<String, Object>> projects = (List<Map<String, Object>>) response.getOrDefault("projects", List.of());
-
 		List<ProjectSummary> result = new ArrayList<>();
-		for (Map<String, Object> project : projects) {
-			String id = Objects.toString(project.get("id"), "");
-			String name = Objects.toString(project.get("name"), id);
-			result.add(new ProjectSummary(id, name));
+
+		try {
+			Map<String, Object> response = restClient.get()
+					.uri("/api/user")
+					.retrieve()
+					.body(Map.class);
+
+			if (response != null) {
+				List<Map<String, Object>> projects = (List<Map<String, Object>>) response
+						.getOrDefault("projects", List.of());
+				for (Map<String, Object> project : projects) {
+					String id = Objects.toString(project.get("id"), "");
+					String name = Objects.toString(project.get("name"), id);
+					if (StringUtils.hasText(id)) {
+						result.add(new ProjectSummary(id, name));
+					}
+				}
+			}
+		}
+		catch (Exception ex) {
+			// Fall back to default project id when the /api/user endpoint is not reachable
+			// or requires UI/session authentication (common in Coroot deployments).
+		}
+
+		if (result.isEmpty() && StringUtils.hasText(properties.getDefaultProjectId())) {
+			String id = properties.getDefaultProjectId();
+			result.add(new ProjectSummary(id, id));
 		}
 
 		return result;
