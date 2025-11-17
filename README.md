@@ -232,3 +232,15 @@ Toolhive will call the MCP tools under the hood and present their outputs.
 - Coroot on GitHub: https://github.com/coroot/coroot
 - MCP spec and tooling: https://modelcontextprotocol.io
 - Toolhive on GitHub: https://github.com/stacklok/toolhive
+
+## Releasing & publishing images
+
+This repository includes a tag-based release workflow:
+
+- Pushing a tag like `v0.2.0` to GitHub triggers `.github/workflows/release.yml`.
+- The workflow runs the test suite, builds the Spring Boot JAR, and builds a container image.
+- The image is pushed to GitHub Container Registry as `ghcr.io/<owner>/coroot-mcp:<tag-without-v>`.
+
+For example, tag `v0.2.0` produces:
+
+- `ghcr.io/meritocra/coroot-mcp:0.2.0`
