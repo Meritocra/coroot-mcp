@@ -8,7 +8,7 @@
 
 Coroot MCP is a Model Context Protocol (MCP) server that turns your [Coroot](https://github.com/coroot/coroot) observability stack into a set of well-typed tools an LLM assistant can call for root-cause analysis.
 
-It is implemented as a Spring Boot 3 / Spring AI 1.1.x application and exposes a JSON-RPC 2.0 MCP endpoint over HTTP at `/mcp`.
+It is implemented as a [Spring Boot 3](https://spring.io/projects/spring-boot) / [Spring AI 1.1.x](https://spring.io/projects/spring-ai) application and exposes a JSON-RPC 2.0 MCP endpoint over HTTP at `/mcp`.
 
 The project is licensed under the MIT License.
 
@@ -23,6 +23,31 @@ You can try the MCP server without a Coroot instance by enabling the built-in st
 The MCP JSON-RPC endpoint will be available at:
 
 - `POST http://localhost:8080/mcp`
+
+## Using with AI coding agents
+
+This project speaks MCP over HTTP. Any MCP-aware coding assistant can talk to it once you point the client at the `/mcp` endpoint.
+
+### Codex CLI
+
+Assuming `coroot-mcp` runs on `http://localhost:8080/mcp`, add an MCP server entry in your Codex configuration, for example:
+
+```toml
+[mcp_servers.coroot-mcp]
+transport = "http"
+url = "http://localhost:8080/mcp"
+```
+
+Restart Codex CLI and list MCP servers to confirm that `coroot-mcp` is available.
+
+### Claude / Claude Code
+
+If you use a Claude-based environment that supports HTTP MCP servers, configure a new MCP server named `coroot-mcp` with:
+
+- Transport: HTTP
+- URL: `http://localhost:8080/mcp`
+
+You can then call `list_recent_incidents` and `summarize_incident_root_cause` from within that environment.
 
 ## What this MCP server does
 
@@ -163,31 +188,6 @@ MCP-compatible clients can either:
 
 - Load the manifest from disk (e.g. `mcp.json` in a project directory), or
 - Be configured directly with the MCP HTTP endpoint URL (`http://localhost:8080/mcp`).
-
-## Using with AI coding agents
-
-This project speaks MCP over HTTP. Any MCP-aware coding assistant can talk to it once you point the client at the `/mcp` endpoint.
-
-### Codex CLI
-
-Assuming `coroot-mcp` runs on `http://localhost:8080/mcp`, add an MCP server entry in your Codex configuration, for example:
-
-```toml
-[mcp_servers.coroot-mcp]
-transport = "http"
-url = "http://localhost:8080/mcp"
-```
-
-Restart Codex CLI and list MCP servers to confirm that `coroot-mcp` is available.
-
-### Claude / Claude Code
-
-If you use a Claude-based environment that supports HTTP MCP servers, configure a new MCP server named `coroot-mcp` with:
-
-- Transport: HTTP
-- URL: `http://localhost:8080/mcp`
-
-You can then call `list_recent_incidents` and `summarize_incident_root_cause` from within that environment.
 
 ## Available tools
 
