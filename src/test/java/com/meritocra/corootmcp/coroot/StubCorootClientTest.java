@@ -65,4 +65,15 @@ class StubCorootClientTest {
 		assertThat(apps.get(0).getService()).isNotBlank();
 		assertThat(apps.get(0).getIndicators()).isNotEmpty();
 	}
+
+	@Test
+	void givenProject_whenListingRisksOverview_thenReturnsRisks() {
+		// when
+		List<RiskOverviewEntry> risks = client.listRisksOverview("production");
+
+		// then
+		assertThat(risks).isNotEmpty();
+		assertThat(risks.get(0).getService()).isNotBlank();
+		assertThat(risks.get(0).getSeverity()).isNotBlank();
+	}
 }

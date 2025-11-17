@@ -201,6 +201,7 @@ The MCP server exposes tools via `tools/list` and `tools/call`.
 | `summarize_incident_root_cause` | Generates a natural-language explanation of an incident’s likely root cause, blast radius, and remediation steps. | Coroot’s AI-powered RCA concepts.                                             |
 | `get_applications_overview`| Returns an overview of application health for a project (per‑service status and key indicators).                  | Application Health Summary in the Coroot UI.                                  |
 | `get_service_health`       | Returns a compact health snapshot for a single service, including key indicators.                                 | Per‑service health indicators (latency, errors, instances, etc.).            |
+| `get_risks_overview`       | Returns a summary of risks for a project, including exposure (IPs, ports) and availability information.          | Risk overview for applications and infrastructure.                            |
 
 All tools are read-only and safe to expose to assistants.
 
