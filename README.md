@@ -8,6 +8,8 @@
 
 Coroot MCP is a Model Context Protocol (MCP) server that turns your [Coroot](https://github.com/coroot/coroot) observability stack into a set of well-typed tools an LLM assistant can call for root-cause analysis.
 
+This is a community-maintained integration and is not an official Coroot product or endorsement.
+
 It is implemented as a [Spring Boot 3](https://spring.io/projects/spring-boot) / [Spring AI 1.1.x](https://spring.io/projects/spring-ai) application and exposes a JSON-RPC 2.0 MCP endpoint over HTTP at `/mcp`.
 
 The project is licensed under the MIT License.

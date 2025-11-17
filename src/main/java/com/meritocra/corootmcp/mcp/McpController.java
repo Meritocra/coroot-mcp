@@ -63,6 +63,12 @@ public class McpController {
 					toolName = request.path("params").path("name").asText(null);
 					response.set("result", handleToolsCall(request.path("params")));
 				}
+				case "initialized", "notifications/initialized" -> {
+					// JSON-RPC notifications like `notifications/initialized` are no-ops in MCP.
+					// Return an empty result instead of an error so clients don't treat this as
+					// handshake failure.
+					response.set("result", objectMapper.createObjectNode());
+				}
 				default -> response.set("error", error(-32601, "Method not found: " + method));
 			}
 		}

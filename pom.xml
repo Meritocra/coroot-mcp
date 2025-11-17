@@ -12,7 +12,7 @@
 	<artifactId>coroot-mcp</artifactId>
 	<version>0.2.0</version>
 	<name>coroot-mcp</name>
-	<description>MCP server that exposes Coroot incidents and root-cause context as tools.</description>
+	<description>Community MCP server that exposes Coroot incidents and root-cause context as tools (not an official Coroot product).</description>
 	<url>https://github.com/Meritocra/coroot-mcp</url>
 	<licenses>
 		<license>
