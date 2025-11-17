@@ -44,4 +44,14 @@ class StubCorootClientTest {
 		assertThat(snapshot.getIndicators()).isNotEmpty();
 		assertThat(snapshot.getObservedAt()).isNotNull();
 	}
+
+	@Test
+	void givenClient_whenListingProjects_thenReturnsAtLeastOneProject() {
+		// when
+		List<ProjectSummary> projects = client.listProjects();
+
+		// then
+		assertThat(projects).isNotEmpty();
+		assertThat(projects.get(0).getId()).isNotBlank();
+	}
 }

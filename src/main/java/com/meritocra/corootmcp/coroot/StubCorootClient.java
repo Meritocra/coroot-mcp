@@ -42,4 +42,9 @@ public class StubCorootClient implements CorootClient {
 				Map.of("p95_latency_ms", 350, "error_rate_percent", 0.2, "saturation_percent", 63),
 				Instant.now());
 	}
+
+	@Override
+	public List<ProjectSummary> listProjects() {
+		return List.of(new ProjectSummary("production", "Production"));
+	}
 }
