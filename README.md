@@ -204,6 +204,8 @@ Both tools are read-only and safe to expose to assistants.
 
 ## Using with Toolhive (example)
 
+[Toolhive](https://github.com/stacklok/toolhive) is a multi-server MCP manager that can run in your cluster or on the desktop.
+
 1. Build and run the server (locally or in a container).
 2. Ensure `mcp.json` is accessible to Toolhive (either via local file path or by copying its contents into Toolhive’s MCP configuration).
 3. In Toolhive, add a new MCP server and point it at:
@@ -220,3 +222,4 @@ Toolhive will call the MCP tools under the hood and present their outputs.
 - Coroot website: https://coroot.com
 - Coroot on GitHub: https://github.com/coroot/coroot
 - MCP spec and tooling: https://modelcontextprotocol.io
+- Toolhive on GitHub: https://github.com/stacklok/toolhive
