@@ -4,6 +4,346 @@
   "description": "Community MCP server that exposes Coroot root-cause analysis and incident context as tools for assistants (not an official Coroot product).",
   "license": "MIT",
   "homepageUrl": "https://github.com/Meritocra/coroot-mcp",
+  "tools": [
+    {
+      "name": "get_deployments_overview",
+      "description": "Returns an overview of recent deployments and their status for a Coroot project.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "description": "Coroot project identifier. Defaults to coroot.default-project-id when omitted."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "investigate_incident",
+      "description": "Performs a structured incident investigation using Coroot data and returns an RCA summary plus a machine-readable JSON payload.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "description": "Coroot project identifier. Defaults to coroot.default-project-id when omitted."
+          },
+          "incidentId": {
+            "type": "string",
+            "description": "Identifier of the incident as seen in Coroot. Use ids from the incidents list."
+          },
+          "maxWords": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 1000,
+            "description": "Upper bound on the length of the natural-language RCA summary."
+          },
+          "audience": {
+            "type": "string",
+            "description": "Target audience for the summary, for example 'sre' or 'exec'. Defaults to 'sre'."
+          },
+          "includeTraces": {
+            "type": "boolean",
+            "description": "Whether to include tracing overviews in the analysis."
+          },
+          "includeLogs": {
+            "type": "boolean",
+            "description": "Whether to include log overviews in the analysis."
+          },
+          "includeCosts": {
+            "type": "boolean",
+            "description": "Whether to include costs overview in the analysis."
+          },
+          "includeRisks": {
+            "type": "boolean",
+            "description": "Whether to include risk overview in the analysis."
+          }
+        },
+        "required": [
+          "incidentId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_nodes_overview",
+      "description": "Returns an overview of node health for a Coroot project, aligned with the Nodes overview in Coroot.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "description": "Coroot project identifier. Defaults to coroot.default-project-id when omitted."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_service_health",
+      "description": "Returns a compact health snapshot for a Coroot service, aligned with the Application Health Summary view.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "description": "Coroot project identifier. Defaults to coroot.default-project-id when omitted."
+          },
+          "service": {
+            "type": "string",
+            "description": "Coroot service or application identifier, as shown in the Coroot UI."
+          }
+        },
+        "required": [
+          "service"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_applications_overview",
+      "description": "Returns an overview of application health for a Coroot project, aligned with the Application Health Summary view.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "description": "Coroot project identifier. Defaults to coroot.default-project-id when omitted."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_slo_overview",
+      "description": "Returns an overview of SLO objectives for a Coroot project (availability & latency thresholds per project and app).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "description": "Coroot project identifier. Defaults to coroot.default-project-id when omitted."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_application_logs",
+      "description": "Returns recent log entries for a single Coroot application, summarised for AI-assisted analysis.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "description": "Coroot project identifier. Defaults to coroot.default-project-id when omitted."
+          },
+          "applicationId": {
+            "type": "string",
+            "description": "Coroot application identifier like 'cluster:namespace:Kind:name'. Use ids from application health views."
+          },
+          "windowMinutes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1440,
+            "description": "Time window, in minutes, to retrieve log entries for. Defaults to 30 minutes."
+          },
+          "maxEntries": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "description": "Maximum number of log entries to return, capped at 100."
+          }
+        },
+        "required": [
+          "applicationId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_traces_overview",
+      "description": "Returns a traces overview for a Coroot project, aligned with the Traces overview in Coroot.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "description": "Coroot project identifier. Defaults to coroot.default-project-id when omitted."
+          },
+          "query": {
+            "type": "string",
+            "description": "Optional trace query string as you would enter it in the Coroot traces overview."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_application_traces",
+      "description": "Returns recent trace data for a single Coroot application over a bounded time window.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "description": "Coroot project identifier. Defaults to coroot.default-project-id when omitted."
+          },
+          "applicationId": {
+            "type": "string",
+            "description": "Coroot application identifier like 'cluster:namespace:Kind:name'. Use ids from application health views."
+          },
+          "windowMinutes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1440,
+            "description": "Time window, in minutes, to retrieve trace data for. Defaults to 30 minutes."
+          }
+        },
+        "required": [
+          "applicationId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_projects",
+      "description": "Returns the Coroot projects the current API key can access.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_logs_overview",
+      "description": "Returns a logs overview for a Coroot project, aligned with the Logs overview in Coroot.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "description": "Coroot project identifier. Defaults to coroot.default-project-id when omitted."
+          },
+          "query": {
+            "type": "string",
+            "description": "Optional log query string as you would enter it in the Coroot logs overview."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_recent_incidents",
+      "description": "Returns a compact list of recent Coroot incidents suitable for follow-up analysis or selection.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "description": "Coroot project identifier. Defaults to coroot.default-project-id when omitted."
+          },
+          "minimumSeverity": {
+            "type": "string",
+            "enum": [
+              "INFO",
+              "WARNING",
+              "CRITICAL"
+            ],
+            "description": "Minimum incident severity to include. Defaults to WARNING."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50,
+            "description": "Maximum number of incidents to return. Defaults to 10."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_incident_details",
+      "description": "Returns detailed Coroot incident context, including suspected root cause, affected services, metrics, and timeline.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "description": "Coroot project identifier. Defaults to coroot.default-project-id when omitted."
+          },
+          "incidentId": {
+            "type": "string",
+            "description": "Identifier of the incident as seen in Coroot. Use this when a human references a specific incident."
+          }
+        },
+        "required": [
+          "incidentId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_risks_overview",
+      "description": "Returns a summary of risks detected in a Coroot project, including exposure and availability information.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "description": "Coroot project identifier. Defaults to coroot.default-project-id when omitted."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "summarize_incident_root_cause",
+      "description": "Summarizes a Coroot incident and explains the most likely root cause, blast radius, and next steps.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "description": "Coroot project identifier. Defaults to coroot.default-project-id when omitted."
+          },
+          "incidentId": {
+            "type": "string",
+            "description": "Identifier of the incident as seen in Coroot. Use this when a human references a specific incident."
+          },
+          "maxWords": {
+            "type": "integer",
+            "minimum": 50,
+            "maximum": 800,
+            "description": "Upper bound on the length of the natural-language summary."
+          },
+          "includeMetricsTable": {
+            "type": "boolean",
+            "description": "Whether to include a compact JSON structure with key metrics that the model can render as a table."
+          }
+        },
+        "required": [
+          "incidentId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_costs_overview",
+      "description": "Returns a cost overview for a Coroot project, aligned with the Costs overview in Coroot.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "description": "Coroot project identifier. Defaults to coroot.default-project-id when omitted."
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  ],
   "environment": {
     "secrets": [
       "OPENAI_API_KEY",
