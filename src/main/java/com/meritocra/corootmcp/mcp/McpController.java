@@ -51,12 +51,11 @@ public class McpController {
 		String method = request.path("method").asText();
 
 		// JSON-RPC notifications like `notifications/initialized` are fire-and-forget.
-		// MCP clients do not expect any JSON-RPC response here; returning a body can
-		// confuse streaming HTTP transports. Accept the notification and return an
-		// empty 200 response.
+		// For HTTP transports, MCP servers should respond with 202 Accepted and no
+		// body when a notification is successfully processed.
 		if ("notifications/initialized".equals(method)) {
 			logger.info("mcpNotification method=notifications/initialized");
-			return ResponseEntity.ok().build();
+			return ResponseEntity.accepted().build();
 		}
 
 		ObjectNode response = objectMapper.createObjectNode();
