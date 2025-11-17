@@ -129,7 +129,7 @@ public class HttpCorootClient implements CorootClient {
 	@SuppressWarnings("unchecked")
 	public List<ProjectSummary> listProjects() {
 		Map<String, Object> response = restClient.get()
-				.uri("/api/v1/user")
+				.uri("/api/user")
 				.retrieve()
 				.body(Map.class);
 
