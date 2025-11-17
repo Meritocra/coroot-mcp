@@ -1,6 +1,7 @@
 # coroot-mcp
 
 [![CI](https://github.com/Meritocra/coroot-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Meritocra/coroot-mcp/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/Meritocra/coroot-mcp/branch/main/graph/badge.svg)](https://codecov.io/gh/Meritocra/coroot-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Java](https://img.shields.io/badge/Java-21%2B-blue.svg)](pom.xml)
 
