@@ -204,6 +204,7 @@ The MCP server exposes tools via `tools/list` and `tools/call`.
 | `get_risks_overview`       | Returns a summary of risks for a project, including exposure (IPs, ports) and availability information.          | [Risk overview](https://docs.coroot.com/risks/overview).                      |
 | `get_nodes_overview`       | Returns an overview of node health for a project (CPU, memory, network, disk, private/public IPs).               | Nodes section of the [Overview](https://docs.coroot.com/overview).           |
 | `get_deployments_overview` | Returns recent deployments, including service, version, status, age, and a concise event summary.                | [Deployment tracking](https://docs.coroot.com/inspections/deployment-tracking). |
+| `get_traces_overview`      | Returns a tracing overview for a project, optionally filtered by a query string (service, endpoint, etc.).       | [Tracing overview](https://docs.coroot.com/tracing/overview).                |
 
 All tools are read-only and safe to expose to assistants.
 

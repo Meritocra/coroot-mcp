@@ -3,6 +3,7 @@ package com.meritocra.corootmcp.coroot;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -95,5 +96,15 @@ class StubCorootClientTest {
 		// then
 		assertThat(deployments).isNotEmpty();
 		assertThat(deployments.get(0).getService()).isNotBlank();
+	}
+
+	@Test
+	void givenProject_whenGettingTracesOverview_thenReturnsOverviewMap() {
+		// when
+		Map<String, Object> overview = client.getTracesOverview("production", "service:checkout");
+
+		// then
+		assertThat(overview).isNotEmpty();
+		assertThat(overview.get("projectId")).isEqualTo("production");
 	}
 }
