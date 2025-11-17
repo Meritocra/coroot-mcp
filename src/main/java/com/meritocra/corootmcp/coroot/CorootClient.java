@@ -1,6 +1,7 @@
 package com.meritocra.corootmcp.coroot;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CorootClient {
 
@@ -19,4 +20,7 @@ public interface CorootClient {
 	List<NodeOverviewEntry> listNodesOverview(String projectId);
 
 	List<DeploymentOverviewEntry> listDeploymentsOverview(String projectId);
+
+	Map<String, Object> getTracesOverview(String projectId, String query);
+
 }

@@ -15,6 +15,7 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 - `get_risks_overview` tool backed by `/api/project/{project}/overview/risks`.
 - `get_nodes_overview` tool backed by `/api/project/{project}/overview/nodes`.
 - `get_deployments_overview` tool backed by `/api/project/{project}/overview/deployments`.
+- `get_traces_overview` tool backed by `/api/project/{project}/overview/traces`.
 - Guard beans that fail fast when required Coroot or OpenAI configuration is missing outside the `stub-coroot` profile.
 - README updates with modern quickstart, AI agent usage, Toolhive example, and links to relevant Coroot documentation.
 

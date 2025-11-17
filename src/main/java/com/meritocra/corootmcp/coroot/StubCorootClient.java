@@ -87,4 +87,14 @@ public class StubCorootClient implements CorootClient {
 
 		return List.of(deployment);
 	}
+
+	@Override
+	public Map<String, Object> getTracesOverview(String projectId, String query) {
+		return Map.of(
+				"projectId", projectId,
+				"summary", Map.of("requestsPerSecond", 72, "errorRatePercent", 1.2),
+				"topEndpoints", List.of(
+						Map.of("service", "checkout-service", "p95LatencyMs", 240, "errorRatePercent", 2.3),
+						Map.of("service", "catalog-service", "p95LatencyMs", 120, "errorRatePercent", 0.4)));
+	}
 }

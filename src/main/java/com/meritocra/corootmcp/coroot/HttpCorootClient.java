@@ -372,6 +372,29 @@ public class HttpCorootClient implements CorootClient {
 		return result;
 	}
 
+	@Override
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> getTracesOverview(String projectId, String query) {
+		Assert.hasText(projectId, "projectId must not be empty");
+
+		Map<String, Object> response = restClient.get()
+				.uri(uriBuilder -> {
+					var builder = uriBuilder.path("/api/project/{projectId}/overview/traces");
+					if (StringUtils.hasText(query)) {
+						builder.queryParam("query", query);
+					}
+					return builder.build(projectId);
+				})
+				.retrieve()
+				.body(Map.class);
+
+		if (response == null) {
+			return Map.of();
+		}
+
+		return response;
+	}
+
 	private int toInt(Object value) {
 		if (value instanceof Number number) {
 			return number.intValue();
