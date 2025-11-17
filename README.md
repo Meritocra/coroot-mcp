@@ -82,7 +82,7 @@ The MCP server exposes tools via `tools/list` and `tools/call`.
 | `get_logs_overview`        | Returns a logs overview for a project, optionally filtered by a log query string.                                | [Logs overview](https://docs.coroot.com/logs/overview).                      |
 | `get_application_logs`     | Returns recent log entries for a single application over a bounded time window, with a severity breakdown.       | Application logs view in Coroot’s logs UI.                                    |
 | `get_costs_overview`       | Returns a cost overview for nodes and applications in a project.                                                 | [Costs overview](https://docs.coroot.com/costs/overview).                    |
-| `get_slo_overview`         | Returns SLO availability and latency objectives at project and per‑service level.                               | [SLOs](https://docs.coroot.com/slo/).                                        |
+| `get_slo_overview`         | Returns SLO availability and latency objectives at project and per‑service level.                               | [SLOs](https://docs.coroot.com/inspections/slo/).                            |
 
 All tools are read-only and safe to expose to assistants by default.
 
