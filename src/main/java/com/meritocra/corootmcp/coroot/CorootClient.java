@@ -11,4 +11,6 @@ public interface CorootClient {
 	ServiceHealthSnapshot getServiceHealth(String projectId, String service);
 
 	List<ProjectSummary> listProjects();
+
+	List<ApplicationOverviewEntry> listApplicationsOverview(String projectId);
 }

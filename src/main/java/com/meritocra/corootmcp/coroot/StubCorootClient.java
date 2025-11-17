@@ -47,4 +47,19 @@ public class StubCorootClient implements CorootClient {
 	public List<ProjectSummary> listProjects() {
 		return List.of(new ProjectSummary("production", "Production"));
 	}
+
+	@Override
+	public List<ApplicationOverviewEntry> listApplicationsOverview(String projectId) {
+		ApplicationOverviewEntry first = new ApplicationOverviewEntry(projectId, "checkout-service", "cluster-1",
+				"web", "CRITICAL",
+				Map.of("errors", Map.of("status", "CRITICAL", "value", "2.3%"), "latency",
+						Map.of("status", "CRITICAL", "value", "1.2s")));
+
+		ApplicationOverviewEntry second = new ApplicationOverviewEntry(projectId, "catalog-service", "cluster-1",
+				"web", "WARNING",
+				Map.of("errors", Map.of("status", "WARNING", "value", "0.5%"), "latency",
+						Map.of("status", "OK", "value", "250ms")));
+
+		return List.of(first, second);
+	}
 }
