@@ -16,7 +16,11 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.DefaultResponseErrorHandler;
+
+import java.io.IOException;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		properties = { "mcp.auth-token=test-secret-token" })
@@ -29,7 +33,18 @@ class McpControllerAuthIntegrationTest {
 	@LocalServerPort
 	private int localServerPort;
 
-	private final RestTemplate restTemplate = new RestTemplate();
+	private final RestTemplate restTemplate;
+
+	McpControllerAuthIntegrationTest() {
+		this.restTemplate = new RestTemplate();
+		this.restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
+			@Override
+			public boolean hasError(ClientHttpResponse response) throws IOException {
+				// Allow tests to inspect non-2xx responses without throwing exceptions.
+				return false;
+			}
+		});
+	}
 
 	@Test
 	void givenAuthTokenConfigured_whenNoAuthorizationHeader_thenRequestIsRejected() throws Exception {
