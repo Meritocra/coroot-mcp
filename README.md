@@ -195,13 +195,15 @@ The MCP server exposes tools via `tools/list` and `tools/call`.
 
 | MCP tool                    | What it does                                                                                                      | Coroot feature                                                                 |
 |----------------------------|--------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-| `list_projects`            | Returns the Coroot projects the current API key can access.                                                       | Projects visible in the Coroot UI for the current user.                       |
+| `list_projects`            | Returns the Coroot projects the current API key can access.                                                       | [Projects](https://docs.coroot.com/getting-started/projects/) visible in the Coroot UI. |
 | `list_recent_incidents`    | Lists recent incidents with id, title, service, severity, and timestamps, with optional filters.                  | [Incidents](https://docs.coroot.com/alerting/incidents/).                     |
-| `get_incident_details`     | Returns detailed incident context (summary, suspected root cause, affected services, metrics, timeline).          | Incident detail view in Coroot.                                               |
-| `summarize_incident_root_cause` | Generates a natural-language explanation of an incident’s likely root cause, blast radius, and remediation steps. | Coroot’s AI-powered RCA concepts.                                             |
-| `get_applications_overview`| Returns an overview of application health for a project (per‑service status and key indicators).                  | Application Health Summary in the Coroot UI.                                  |
-| `get_service_health`       | Returns a compact health snapshot for a single service, including key indicators.                                 | Per‑service health indicators (latency, errors, instances, etc.).            |
-| `get_risks_overview`       | Returns a summary of risks for a project, including exposure (IPs, ports) and availability information.          | Risk overview for applications and infrastructure.                            |
+| `get_incident_details`     | Returns detailed incident context (summary, suspected root cause, affected services, metrics, timeline).          | Incident detail view in the Coroot UI.                                        |
+| `summarize_incident_root_cause` | Generates a natural-language explanation of an incident’s likely root cause, blast radius, and remediation steps. | [AI-powered Root Cause Analysis](https://docs.coroot.com/ai/).                |
+| `get_applications_overview`| Returns an overview of application health for a project (per‑service status and key indicators).                  | [Application Health Summary](https://github.com/coroot/coroot#application-health-summary). |
+| `get_service_health`       | Returns a compact health snapshot for a single service, including key indicators.                                 | Per‑service health indicators; see [Service inspections](https://docs.coroot.com/inspections/services/). |
+| `get_risks_overview`       | Returns a summary of risks for a project, including exposure (IPs, ports) and availability information.          | [Risk overview](https://docs.coroot.com/risks/overview).                      |
+| `get_nodes_overview`       | Returns an overview of node health for a project (CPU, memory, network, disk, private/public IPs).               | Nodes section of the [Overview](https://docs.coroot.com/overview).           |
+| `get_deployments_overview` | Returns recent deployments, including service, version, status, age, and a concise event summary.                | [Deployment tracking](https://docs.coroot.com/inspections/deployment-tracking). |
 
 All tools are read-only and safe to expose to assistants.
 

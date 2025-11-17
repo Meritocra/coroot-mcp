@@ -106,9 +106,9 @@ public class GetIncidentDetailsTool implements McpTool {
 		}
 
 		incidentJson.put("suspectedRootCause", context.getSuspectedRootCause());
-		incidentJson.putPOJO("affectedServices", context.getAffectedServices());
-		incidentJson.putPOJO("metricsSnapshot", context.getMetricsSnapshot());
-		incidentJson.putPOJO("timeline", context.getTimeline());
+		incidentJson.set("affectedServices", objectMapper.valueToTree(context.getAffectedServices()));
+		incidentJson.set("metricsSnapshot", objectMapper.valueToTree(context.getMetricsSnapshot()));
+		incidentJson.set("timeline", objectMapper.valueToTree(context.getTimeline()));
 
 		if (context.getLastUpdatedAt() != null) {
 			incidentJson.put("lastUpdatedAt",
@@ -119,4 +119,3 @@ public class GetIncidentDetailsTool implements McpTool {
 	}
 
 }
-

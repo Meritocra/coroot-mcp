@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.meritocra.corootmcp.config.CorootProperties;
-import com.meritocra.corootmcp.coroot.ApplicationOverviewEntry;
 import com.meritocra.corootmcp.coroot.CorootClient;
+import com.meritocra.corootmcp.coroot.NodeOverviewEntry;
 import com.meritocra.corootmcp.mcp.McpTool;
 import com.meritocra.corootmcp.mcp.ToolDefinition;
 
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 @Component
-public class GetApplicationsOverviewTool implements McpTool {
+public class GetNodesOverviewTool implements McpTool {
 
 	private final CorootClient corootClient;
 
@@ -23,8 +23,7 @@ public class GetApplicationsOverviewTool implements McpTool {
 
 	private final ObjectMapper objectMapper;
 
-	public GetApplicationsOverviewTool(CorootClient corootClient, CorootProperties properties,
-			ObjectMapper objectMapper) {
+	public GetNodesOverviewTool(CorootClient corootClient, CorootProperties properties, ObjectMapper objectMapper) {
 		this.corootClient = corootClient;
 		this.properties = properties;
 		this.objectMapper = objectMapper;
@@ -44,8 +43,8 @@ public class GetApplicationsOverviewTool implements McpTool {
 
 		schema.put("additionalProperties", false);
 
-		return new ToolDefinition("get_applications_overview",
-				"Returns an overview of application health for a Coroot project, aligned with the Application Health Summary view.",
+		return new ToolDefinition("get_nodes_overview",
+				"Returns an overview of node health for a Coroot project, aligned with the Nodes overview in Coroot.",
 				schema);
 	}
 
@@ -59,7 +58,7 @@ public class GetApplicationsOverviewTool implements McpTool {
 			throw new IllegalArgumentException("projectId is required when coroot.default-project-id is not configured");
 		}
 
-		List<ApplicationOverviewEntry> entries = corootClient.listApplicationsOverview(projectId);
+		List<NodeOverviewEntry> entries = corootClient.listNodesOverview(projectId);
 
 		ObjectNode result = objectMapper.createObjectNode();
 		ArrayNode content = result.putArray("content");
@@ -67,26 +66,37 @@ public class GetApplicationsOverviewTool implements McpTool {
 		ObjectNode jsonItem = content.addObject();
 		jsonItem.put("type", "json");
 
-		ArrayNode appsArray = objectMapper.createArrayNode();
-		for (ApplicationOverviewEntry entry : entries) {
+		ArrayNode nodesArray = objectMapper.createArrayNode();
+		for (NodeOverviewEntry entry : entries) {
 			ObjectNode node = objectMapper.createObjectNode();
 			node.put("projectId", entry.getProjectId());
-			node.put("service", entry.getService());
+			node.put("name", entry.getName());
 			node.put("cluster", entry.getCluster());
-			node.put("category", entry.getCategory());
 			node.put("status", entry.getStatus());
-			if (entry.getIndicators() != null) {
-				node.set("indicators", objectMapper.valueToTree(entry.getIndicators()));
+			node.put("applications", entry.getApplications());
+			node.put("instances", entry.getInstances());
+			node.put("uptime", entry.getUptime());
+			node.set("privateIps", objectMapper.valueToTree(entry.getPrivateIps()));
+			node.set("publicIps", objectMapper.valueToTree(entry.getPublicIps()));
+			if (entry.getCpuPercent() != null) {
+				node.put("cpuPercent", entry.getCpuPercent());
 			}
-			else {
-				node.putObject("indicators");
+			if (entry.getMemoryPercent() != null) {
+				node.put("memoryPercent", entry.getMemoryPercent());
 			}
-			appsArray.add(node);
+			if (entry.getNetworkPercent() != null) {
+				node.put("networkPercent", entry.getNetworkPercent());
+			}
+			if (entry.getDiskPercent() != null) {
+				node.put("diskPercent", entry.getDiskPercent());
+			}
+			nodesArray.add(node);
 		}
 
-		jsonItem.set("json", appsArray);
+		jsonItem.set("json", nodesArray);
 
 		return result;
 	}
 
 }
+

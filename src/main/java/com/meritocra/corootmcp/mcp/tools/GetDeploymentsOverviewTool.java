@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.meritocra.corootmcp.config.CorootProperties;
-import com.meritocra.corootmcp.coroot.ApplicationOverviewEntry;
 import com.meritocra.corootmcp.coroot.CorootClient;
+import com.meritocra.corootmcp.coroot.DeploymentOverviewEntry;
 import com.meritocra.corootmcp.mcp.McpTool;
 import com.meritocra.corootmcp.mcp.ToolDefinition;
 
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 @Component
-public class GetApplicationsOverviewTool implements McpTool {
+public class GetDeploymentsOverviewTool implements McpTool {
 
 	private final CorootClient corootClient;
 
@@ -23,7 +23,7 @@ public class GetApplicationsOverviewTool implements McpTool {
 
 	private final ObjectMapper objectMapper;
 
-	public GetApplicationsOverviewTool(CorootClient corootClient, CorootProperties properties,
+	public GetDeploymentsOverviewTool(CorootClient corootClient, CorootProperties properties,
 			ObjectMapper objectMapper) {
 		this.corootClient = corootClient;
 		this.properties = properties;
@@ -44,8 +44,8 @@ public class GetApplicationsOverviewTool implements McpTool {
 
 		schema.put("additionalProperties", false);
 
-		return new ToolDefinition("get_applications_overview",
-				"Returns an overview of application health for a Coroot project, aligned with the Application Health Summary view.",
+		return new ToolDefinition("get_deployments_overview",
+				"Returns an overview of recent deployments and their status for a Coroot project.",
 				schema);
 	}
 
@@ -59,7 +59,7 @@ public class GetApplicationsOverviewTool implements McpTool {
 			throw new IllegalArgumentException("projectId is required when coroot.default-project-id is not configured");
 		}
 
-		List<ApplicationOverviewEntry> entries = corootClient.listApplicationsOverview(projectId);
+		List<DeploymentOverviewEntry> entries = corootClient.listDeploymentsOverview(projectId);
 
 		ObjectNode result = objectMapper.createObjectNode();
 		ArrayNode content = result.putArray("content");
@@ -67,26 +67,23 @@ public class GetApplicationsOverviewTool implements McpTool {
 		ObjectNode jsonItem = content.addObject();
 		jsonItem.put("type", "json");
 
-		ArrayNode appsArray = objectMapper.createArrayNode();
-		for (ApplicationOverviewEntry entry : entries) {
+		ArrayNode deploymentsArray = objectMapper.createArrayNode();
+		for (DeploymentOverviewEntry entry : entries) {
 			ObjectNode node = objectMapper.createObjectNode();
 			node.put("projectId", entry.getProjectId());
 			node.put("service", entry.getService());
 			node.put("cluster", entry.getCluster());
-			node.put("category", entry.getCategory());
+			node.put("version", entry.getVersion());
 			node.put("status", entry.getStatus());
-			if (entry.getIndicators() != null) {
-				node.set("indicators", objectMapper.valueToTree(entry.getIndicators()));
-			}
-			else {
-				node.putObject("indicators");
-			}
-			appsArray.add(node);
+			node.put("age", entry.getAge());
+			node.set("summary", objectMapper.valueToTree(entry.getSummary()));
+			deploymentsArray.add(node);
 		}
 
-		jsonItem.set("json", appsArray);
+		jsonItem.set("json", deploymentsArray);
 
 		return result;
 	}
 
 }
+

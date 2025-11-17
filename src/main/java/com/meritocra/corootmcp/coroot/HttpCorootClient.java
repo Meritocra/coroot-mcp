@@ -289,4 +289,110 @@ public class HttpCorootClient implements CorootClient {
 			}
 		}
 	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<NodeOverviewEntry> listNodesOverview(String projectId) {
+		Assert.hasText(projectId, "projectId must not be empty");
+
+		Map<String, Object> response = restClient.get()
+				.uri("/api/project/{projectId}/overview/nodes", projectId)
+				.retrieve()
+				.body(Map.class);
+
+		List<Map<String, Object>> nodes = (List<Map<String, Object>>) response.getOrDefault("nodes", List.of());
+
+		List<NodeOverviewEntry> result = new ArrayList<>();
+		for (Map<String, Object> node : nodes) {
+			String name = Objects.toString(node.get("name"), "");
+			String cluster = Objects.toString(node.get("cluster"), "");
+			String status = Objects.toString(node.get("status"), "");
+
+			int applications = toInt(node.get("applications"));
+			int instances = toInt(node.get("instances"));
+			String uptime = Objects.toString(node.get("uptime"), "");
+
+			List<String> privateIps = (List<String>) node.getOrDefault("private_ips", List.of());
+			List<String> publicIps = (List<String>) node.getOrDefault("public_ips", List.of());
+
+			Double cpu = toDouble(node.get("cpu"));
+			Double memory = toDouble(node.get("memory"));
+			Double network = toDouble(node.get("network"));
+			Double disk = toDouble(node.get("disk"));
+
+			result.add(new NodeOverviewEntry(projectId, name, cluster, status, applications, instances, uptime,
+					privateIps, publicIps, cpu, memory, network, disk));
+		}
+
+		return result;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<DeploymentOverviewEntry> listDeploymentsOverview(String projectId) {
+		Assert.hasText(projectId, "projectId must not be empty");
+
+		Map<String, Object> response = restClient.get()
+				.uri("/api/project/{projectId}/overview/deployments", projectId)
+				.retrieve()
+				.body(Map.class);
+
+		List<Map<String, Object>> deployments = (List<Map<String, Object>>) response.getOrDefault("deployments",
+				List.of());
+
+		List<DeploymentOverviewEntry> result = new ArrayList<>();
+		for (Map<String, Object> deployment : deployments) {
+			Map<String, Object> appId = (Map<String, Object>) deployment.getOrDefault("application_id", Map.of());
+
+			String service = Objects.toString(appId.getOrDefault("name", ""), "");
+			String cluster = Objects.toString(appId.getOrDefault("cluster_id", ""), "");
+
+			String version = Objects.toString(deployment.get("version"), "");
+			String status = Objects.toString(deployment.get("status"), "");
+			String age = Objects.toString(deployment.get("age"), "");
+
+			List<Map<String, Object>> events = (List<Map<String, Object>>) deployment.getOrDefault("events", List.of());
+			List<String> summary = new ArrayList<>();
+			for (Map<String, Object> event : events) {
+				String message = Objects.toString(event.get("message"), "");
+				String eventStatus = Objects.toString(event.get("status"), "");
+				if (!message.isEmpty()) {
+					if (!eventStatus.isEmpty()) {
+						summary.add(eventStatus + ": " + message);
+					}
+					else {
+						summary.add(message);
+					}
+				}
+			}
+
+			result.add(new DeploymentOverviewEntry(projectId, service, cluster, version, status, age, summary));
+		}
+
+		return result;
+	}
+
+	private int toInt(Object value) {
+		if (value instanceof Number number) {
+			return number.intValue();
+		}
+		try {
+			return value != null ? Integer.parseInt(value.toString()) : 0;
+		}
+		catch (NumberFormatException ex) {
+			return 0;
+		}
+	}
+
+	private Double toDouble(Object value) {
+		if (value instanceof Number number) {
+			return number.doubleValue();
+		}
+		try {
+			return value != null ? Double.parseDouble(value.toString()) : null;
+		}
+		catch (NumberFormatException ex) {
+			return null;
+		}
+	}
 }
