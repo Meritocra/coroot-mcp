@@ -9,5 +9,6 @@ public interface CorootClient {
 	List<IncidentSummary> listRecentIncidents(String projectId, IncidentSeverity minimumSeverity, int limit);
 
 	ServiceHealthSnapshot getServiceHealth(String projectId, String service);
-}
 
+	List<ProjectSummary> listProjects();
+}

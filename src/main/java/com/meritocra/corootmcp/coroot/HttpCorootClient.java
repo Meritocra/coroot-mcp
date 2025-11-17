@@ -125,6 +125,26 @@ public class HttpCorootClient implements CorootClient {
 		return new ServiceHealthSnapshot(projectId, service, indicators, observedAt);
 	}
 
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<ProjectSummary> listProjects() {
+		Map<String, Object> response = restClient.get()
+				.uri("/api/v1/user")
+				.retrieve()
+				.body(Map.class);
+
+		List<Map<String, Object>> projects = (List<Map<String, Object>>) response.getOrDefault("projects", List.of());
+
+		List<ProjectSummary> result = new ArrayList<>();
+		for (Map<String, Object> project : projects) {
+			String id = Objects.toString(project.get("id"), "");
+			String name = Objects.toString(project.get("name"), id);
+			result.add(new ProjectSummary(id, name));
+		}
+
+		return result;
+	}
+
 	@SuppressWarnings("unchecked")
 	private IncidentContext toIncidentContext(Map<String, Object> payload) {
 		IncidentSummary summary = toIncidentSummary((Map<String, Object>) payload.get("summary"));
