@@ -30,32 +30,38 @@ class McpToolRegistryTest {
 	}
 
 	@Test
-	void registersAndListsTools() {
+	void givenTool_whenRegistryCreated_thenToolIsRegisteredAndListed() {
+		// given
 		McpTool echo = new EchoTool();
 		McpToolRegistry registry = new McpToolRegistry(List.of(echo));
 
+		// then
 		assertThat(registry.allTools()).containsExactly(echo);
 		assertThat(registry.findTool("echo")).isSameAs(echo);
 	}
 
 	@Test
-	void callsToolByName() {
+	void givenToolName_whenCallingRegistry_thenDelegatesToTool() {
+		// given
 		McpToolRegistry registry = new McpToolRegistry(List.of(new EchoTool()));
 		ObjectNode args = objectMapper.createObjectNode();
 		args.put("message", "hello");
 
+		// when
 		ObjectNode result = registry.call("echo", args);
 
+		// then
 		assertThat(result.path("echo").path("message").asText()).isEqualTo("hello");
 	}
 
 	@Test
-	void throwsOnUnknownTool() {
+	void givenUnknownToolName_whenCallingRegistry_thenThrowsHelpfulError() {
+		// given
 		McpToolRegistry registry = new McpToolRegistry(List.of(new EchoTool()));
 
+		// when / then
 		assertThatThrownBy(() -> registry.call("missing", objectMapper.createObjectNode()))
 				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessageContaining("Unknown tool");
 	}
 }
-
