@@ -17,6 +17,7 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
 /**
  * HTTP-backed implementation of {@link CorootClient} that talks to the Coroot
@@ -72,8 +73,10 @@ public class HttpCorootClient implements CorootClient {
 		Assert.hasText(projectId, "projectId must not be empty");
 		Assert.hasText(incidentId, "incidentId must not be empty");
 
+		String resolvedProjectId = resolveProjectId(projectId);
+
 		Map<String, Object> response = restClient.get()
-				.uri("/api/v1/projects/{projectId}/incidents/{incidentId}", projectId, incidentId)
+				.uri("/api/project/{projectId}/incident/{incidentId}", resolvedProjectId, incidentId)
 				.retrieve()
 				.body(Map.class);
 
@@ -85,11 +88,13 @@ public class HttpCorootClient implements CorootClient {
 	public List<IncidentSummary> listRecentIncidents(String projectId, IncidentSeverity minimumSeverity, int limit) {
 		Assert.hasText(projectId, "projectId must not be empty");
 
+		String resolvedProjectId = resolveProjectId(projectId);
+
 		Map<String, Object> response = restClient.get()
 				.uri(uriBuilder -> uriBuilder
-						.path("/api/v1/projects/{projectId}/incidents")
+						.path("/api/project/{projectId}/incidents")
 						.queryParam("limit", limit)
-						.build(projectId))
+						.build(resolvedProjectId))
 				.retrieve()
 				.body(Map.class);
 
@@ -113,8 +118,12 @@ public class HttpCorootClient implements CorootClient {
 		Assert.hasText(projectId, "projectId must not be empty");
 		Assert.hasText(service, "service must not be empty");
 
+		String resolvedProjectId = resolveProjectId(projectId);
+
 		Map<String, Object> response = restClient.get()
-				.uri("/api/v1/projects/{projectId}/services/{service}/health", projectId, service)
+				// Synthetic endpoint backed by an internal view. The HTTP adapter in front of
+				// Coroot is responsible for mapping this onto real Coroot data.
+				.uri("/api/v1/projects/{projectId}/services/{service}/health", resolvedProjectId, service)
 				.retrieve()
 				.body(Map.class);
 
@@ -167,8 +176,10 @@ public class HttpCorootClient implements CorootClient {
 	public List<ApplicationOverviewEntry> listApplicationsOverview(String projectId) {
 		Assert.hasText(projectId, "projectId must not be empty");
 
+		String resolvedProjectId = resolveProjectId(projectId);
+
 		Map<String, Object> response = restClient.get()
-				.uri("/api/project/{projectId}/overview/applications", projectId)
+				.uri("/api/project/{projectId}/overview/applications", resolvedProjectId)
 				.retrieve()
 				.body(Map.class);
 
@@ -207,8 +218,10 @@ public class HttpCorootClient implements CorootClient {
 	public List<RiskOverviewEntry> listRisksOverview(String projectId) {
 		Assert.hasText(projectId, "projectId must not be empty");
 
+		String resolvedProjectId = resolveProjectId(projectId);
+
 		Map<String, Object> response = restClient.get()
-				.uri("/api/project/{projectId}/overview/risks", projectId)
+				.uri("/api/project/{projectId}/overview/risks", resolvedProjectId)
 				.retrieve()
 				.body(Map.class);
 
@@ -311,8 +324,10 @@ public class HttpCorootClient implements CorootClient {
 	public List<NodeOverviewEntry> listNodesOverview(String projectId) {
 		Assert.hasText(projectId, "projectId must not be empty");
 
+		String resolvedProjectId = resolveProjectId(projectId);
+
 		Map<String, Object> response = restClient.get()
-				.uri("/api/project/{projectId}/overview/nodes", projectId)
+				.uri("/api/project/{projectId}/overview/nodes", resolvedProjectId)
 				.retrieve()
 				.body(Map.class);
 
@@ -348,8 +363,10 @@ public class HttpCorootClient implements CorootClient {
 	public List<DeploymentOverviewEntry> listDeploymentsOverview(String projectId) {
 		Assert.hasText(projectId, "projectId must not be empty");
 
+		String resolvedProjectId = resolveProjectId(projectId);
+
 		Map<String, Object> response = restClient.get()
-				.uri("/api/project/{projectId}/overview/deployments", projectId)
+				.uri("/api/project/{projectId}/overview/deployments", resolvedProjectId)
 				.retrieve()
 				.body(Map.class);
 
@@ -393,13 +410,15 @@ public class HttpCorootClient implements CorootClient {
 	public Map<String, Object> getTracesOverview(String projectId, String query) {
 		Assert.hasText(projectId, "projectId must not be empty");
 
+		String resolvedProjectId = resolveProjectId(projectId);
+
 		Map<String, Object> response = restClient.get()
 				.uri(uriBuilder -> {
 					var builder = uriBuilder.path("/api/project/{projectId}/overview/traces");
 					if (StringUtils.hasText(query)) {
 						builder.queryParam("query", query);
 					}
-					return builder.build(projectId);
+					return builder.build(resolvedProjectId);
 				})
 				.retrieve()
 				.body(Map.class);
@@ -416,13 +435,15 @@ public class HttpCorootClient implements CorootClient {
 	public Map<String, Object> getLogsOverview(String projectId, String query) {
 		Assert.hasText(projectId, "projectId must not be empty");
 
+		String resolvedProjectId = resolveProjectId(projectId);
+
 		Map<String, Object> response = restClient.get()
 				.uri(uriBuilder -> {
 					var builder = uriBuilder.path("/api/project/{projectId}/overview/logs");
 					if (StringUtils.hasText(query)) {
 						builder.queryParam("query", query);
 					}
-					return builder.build(projectId);
+					return builder.build(resolvedProjectId);
 				})
 				.retrieve()
 				.body(Map.class);
@@ -440,6 +461,8 @@ public class HttpCorootClient implements CorootClient {
 		Assert.hasText(projectId, "projectId must not be empty");
 		Assert.hasText(applicationId, "applicationId must not be empty");
 
+		String resolvedProjectId = resolveProjectId(projectId);
+
 		int window = windowMinutes > 0 ? windowMinutes : 30;
 		if (window > 24 * 60) {
 			window = 24 * 60;
@@ -453,7 +476,7 @@ public class HttpCorootClient implements CorootClient {
 						.path("/api/project/{projectId}/app/{app}/tracing")
 						.queryParam("from", from.toEpochMilli())
 						.queryParam("to", to.toEpochMilli())
-						.build(projectId, applicationId))
+						.build(resolvedProjectId, applicationId))
 				.retrieve()
 				.body(Map.class);
 
@@ -470,6 +493,8 @@ public class HttpCorootClient implements CorootClient {
 			int maxEntries) {
 		Assert.hasText(projectId, "projectId must not be empty");
 		Assert.hasText(applicationId, "applicationId must not be empty");
+
+		String resolvedProjectId = resolveProjectId(projectId);
 
 		int window = windowMinutes > 0 ? windowMinutes : 30;
 		if (window > 24 * 60) {
@@ -492,7 +517,7 @@ public class HttpCorootClient implements CorootClient {
 						.queryParam("from", from.toEpochMilli())
 						.queryParam("to", to.toEpochMilli())
 						.queryParam("query", queryJson)
-						.build(projectId, applicationId))
+						.build(resolvedProjectId, applicationId))
 				.retrieve()
 				.body(Map.class);
 
@@ -508,8 +533,10 @@ public class HttpCorootClient implements CorootClient {
 	public Map<String, Object> getCostsOverview(String projectId) {
 		Assert.hasText(projectId, "projectId must not be empty");
 
+		String resolvedProjectId = resolveProjectId(projectId);
+
 		Map<String, Object> response = restClient.get()
-				.uri("/api/project/{projectId}/overview/costs", projectId)
+				.uri("/api/project/{projectId}/overview/costs", resolvedProjectId)
 				.retrieve()
 				.body(Map.class);
 
@@ -525,8 +552,10 @@ public class HttpCorootClient implements CorootClient {
 	public Map<String, Object> getSloOverview(String projectId) {
 		Assert.hasText(projectId, "projectId must not be empty");
 
+		String resolvedProjectId = resolveProjectId(projectId);
+
 		Map<String, Object> response = restClient.get()
-				.uri("/api/project/{projectId}/inspections", projectId)
+				.uri("/api/project/{projectId}/inspections", resolvedProjectId)
 				.retrieve()
 				.body(Map.class);
 
@@ -619,5 +648,33 @@ public class HttpCorootClient implements CorootClient {
 		catch (NumberFormatException ex) {
 			return null;
 		}
+	}
+
+	private String resolveProjectId(String projectIdOrName) {
+		String candidate = projectIdOrName;
+		if (!StringUtils.hasText(candidate)) {
+			candidate = properties.getDefaultProjectId();
+		}
+		if (!StringUtils.hasText(candidate)) {
+			throw new IllegalArgumentException(
+					"projectId is required when coroot.default-project-id is not configured");
+		}
+
+		try {
+			List<ProjectSummary> projects = listProjects();
+			if (projects != null) {
+				for (ProjectSummary project : projects) {
+					if (candidate.equals(project.getId()) || candidate.equals(project.getName())) {
+						return project.getId();
+					}
+				}
+			}
+		}
+		catch (RestClientException ex) {
+			// Best-effort only: if /api/user is not reachable or returns non-JSON,
+			// fall back to the original identifier so tools still behave sensibly.
+		}
+
+		return candidate;
 	}
 }
