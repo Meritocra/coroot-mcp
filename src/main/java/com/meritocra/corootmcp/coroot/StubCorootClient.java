@@ -130,4 +130,38 @@ public class StubCorootClient implements CorootClient {
 				Map.of("globalObjectivePercent", 99.0, "projectDetails", "< 250ms", "applications",
 						List.of(Map.of("service", "checkout-service", "objectivePercent", 99.0, "details", "< 250ms"))));
 	}
+
+	@Override
+	public Map<String, Object> getApplicationTracing(String projectId, String applicationId, int windowMinutes) {
+		return Map.of(
+				"projectId", projectId,
+				"applicationId", applicationId,
+				"windowMinutes", windowMinutes,
+				"spans",
+				List.of(
+						Map.of("service", "checkout-service", "traceId", "trace-1", "spanId", "span-1",
+								"timestampMs", Instant.now().toEpochMilli(), "durationMs", 850.0, "status", "ERROR",
+								"name", "POST /checkout", "client", "web-frontend"),
+						Map.of("service", "checkout-service", "traceId", "trace-2", "spanId", "span-2",
+								"timestampMs", Instant.now().minusSeconds(60).toEpochMilli(), "durationMs", 420.0,
+								"status", "OK", "name", "POST /checkout", "client", "web-frontend")));
+	}
+
+	@Override
+	public Map<String, Object> getApplicationLogs(String projectId, String applicationId, int windowMinutes,
+			int maxEntries) {
+		return Map.of(
+				"projectId", projectId,
+				"applicationId", applicationId,
+				"windowMinutes", windowMinutes,
+				"summary", Map.of("totalEntries", 5, "bySeverity", Map.of("ERROR", 2, "INFO", 3)),
+				"entries",
+				List.of(
+						Map.of("timestampMs", Instant.now().toEpochMilli(), "severity", "ERROR",
+								"message", "Database timeout while processing order 12345", "traceId", "trace-1",
+								"attributes", Map.of("correlation_id", "req-123")),
+						Map.of("timestampMs", Instant.now().minusSeconds(30).toEpochMilli(), "severity", "INFO",
+								"message", "Checkout completed successfully", "traceId", "trace-2",
+								"attributes", Map.of("correlation_id", "req-124"))));
+	}
 }
