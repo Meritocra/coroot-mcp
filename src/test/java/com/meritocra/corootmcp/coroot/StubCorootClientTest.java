@@ -117,4 +117,24 @@ class StubCorootClientTest {
 		assertThat(overview).isNotEmpty();
 		assertThat(overview.get("projectId")).isEqualTo("production");
 	}
+
+	@Test
+	void givenProject_whenGettingCostsOverview_thenReturnsOverviewMap() {
+		// when
+		Map<String, Object> overview = client.getCostsOverview("production");
+
+		// then
+		assertThat(overview).isNotEmpty();
+		assertThat(overview.get("projectId")).isEqualTo("production");
+	}
+
+	@Test
+	void givenProject_whenGettingSloOverview_thenReturnsOverviewMap() {
+		// when
+		Map<String, Object> overview = client.getSloOverview("production");
+
+		// then
+		assertThat(overview).isNotEmpty();
+		assertThat(overview.get("projectId")).isEqualTo("production");
+	}
 }

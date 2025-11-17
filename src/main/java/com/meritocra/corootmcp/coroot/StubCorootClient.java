@@ -107,4 +107,27 @@ public class StubCorootClient implements CorootClient {
 						Map.of("service", "checkout-service", "level", "ERROR", "linesPerMinute", 80),
 						Map.of("service", "catalog-service", "level", "WARN", "linesPerMinute", 40)));
 	}
+
+	@Override
+	public Map<String, Object> getCostsOverview(String projectId) {
+		return Map.of(
+				"projectId", projectId,
+				"nodes", List.of(
+						Map.of("name", "node-1", "cluster", "cluster-1", "idleCostsPerMonth", 120.5)),
+				"applications", List.of(
+						Map.of("service", "checkout-service", "cluster", "cluster-1", "usageCostsPerMonth", 350.0,
+								"allocationCostsPerMonth", 420.0, "overProvisioningCostsPerMonth", 70.0)));
+	}
+
+	@Override
+	public Map<String, Object> getSloOverview(String projectId) {
+		return Map.of(
+				"projectId", projectId,
+				"availability",
+				Map.of("globalObjectivePercent", 99.0, "applications",
+						List.of(Map.of("service", "checkout-service", "objectivePercent", 99.9))),
+				"latency",
+				Map.of("globalObjectivePercent", 99.0, "projectDetails", "< 250ms", "applications",
+						List.of(Map.of("service", "checkout-service", "objectivePercent", 99.0, "details", "< 250ms"))));
+	}
 }

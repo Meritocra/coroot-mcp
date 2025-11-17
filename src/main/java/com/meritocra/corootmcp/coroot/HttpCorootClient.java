@@ -418,6 +418,100 @@ public class HttpCorootClient implements CorootClient {
 		return response;
 	}
 
+	@Override
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> getCostsOverview(String projectId) {
+		Assert.hasText(projectId, "projectId must not be empty");
+
+		Map<String, Object> response = restClient.get()
+				.uri("/api/project/{projectId}/overview/costs", projectId)
+				.retrieve()
+				.body(Map.class);
+
+		if (response == null) {
+			return Map.of();
+		}
+
+		return response;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> getSloOverview(String projectId) {
+		Assert.hasText(projectId, "projectId must not be empty");
+
+		Map<String, Object> response = restClient.get()
+				.uri("/api/project/{projectId}/inspections", projectId)
+				.retrieve()
+				.body(Map.class);
+
+		if (response == null) {
+			return Map.of("projectId", projectId);
+		}
+
+		List<Map<String, Object>> checks = (List<Map<String, Object>>) response.getOrDefault("checks", List.of());
+
+		Map<String, Object> availability = new HashMap<>();
+		Map<String, Object> latency = new HashMap<>();
+
+		for (Map<String, Object> check : checks) {
+			String id = Objects.toString(check.get("id"), "");
+			if (!"SLOAvailability".equals(id) && !"SLOLatency".equals(id)) {
+				continue;
+			}
+
+			Double globalThreshold = toDouble(check.get("global_threshold"));
+			Object projectThresholdObj = check.get("project_threshold");
+			Double projectThreshold = projectThresholdObj instanceof Number number ? number.doubleValue() : null;
+			String projectDetails = Objects.toString(check.get("project_details"), "");
+
+			List<Map<String, Object>> appOverrides = (List<Map<String, Object>>) check
+					.getOrDefault("application_overrides", List.of());
+			List<Map<String, Object>> apps = new ArrayList<>();
+			for (Map<String, Object> app : appOverrides) {
+				Map<String, Object> appId = (Map<String, Object>) app.getOrDefault("id", Map.of());
+				String service = Objects.toString(appId.getOrDefault("name", ""), "");
+				Double threshold = toDouble(app.get("threshold"));
+				String details = Objects.toString(app.get("details"), "");
+
+				Map<String, Object> appEntry = new HashMap<>();
+				appEntry.put("service", service);
+				if (threshold != null) {
+					appEntry.put("objectivePercent", threshold);
+				}
+				if (!details.isEmpty()) {
+					appEntry.put("details", details);
+				}
+				apps.add(appEntry);
+			}
+
+			Map<String, Object> target = "SLOAvailability".equals(id) ? availability : latency;
+			if (globalThreshold != null) {
+				target.put("globalObjectivePercent", globalThreshold);
+			}
+			if (projectThreshold != null) {
+				target.put("projectObjectivePercent", projectThreshold);
+			}
+			if (!projectDetails.isEmpty()) {
+				target.put("projectDetails", projectDetails);
+			}
+			if (!apps.isEmpty()) {
+				target.put("applications", apps);
+			}
+		}
+
+		Map<String, Object> result = new HashMap<>();
+		result.put("projectId", projectId);
+		if (!availability.isEmpty()) {
+			result.put("availability", availability);
+		}
+		if (!latency.isEmpty()) {
+			result.put("latency", latency);
+		}
+
+		return result;
+	}
+
 	private int toInt(Object value) {
 		if (value instanceof Number number) {
 			return number.intValue();
