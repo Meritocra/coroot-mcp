@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -140,6 +141,46 @@ public class HttpCorootClient implements CorootClient {
 			String id = Objects.toString(project.get("id"), "");
 			String name = Objects.toString(project.get("name"), id);
 			result.add(new ProjectSummary(id, name));
+		}
+
+		return result;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<ApplicationOverviewEntry> listApplicationsOverview(String projectId) {
+		Assert.hasText(projectId, "projectId must not be empty");
+
+		Map<String, Object> response = restClient.get()
+				.uri("/api/project/{projectId}/overview/applications", projectId)
+				.retrieve()
+				.body(Map.class);
+
+		List<Map<String, Object>> applications = (List<Map<String, Object>>) response
+				.getOrDefault("applications", List.of());
+
+		List<ApplicationOverviewEntry> result = new ArrayList<>();
+		for (Map<String, Object> app : applications) {
+			Map<String, Object> id = (Map<String, Object>) app.getOrDefault("id", Map.of());
+			String service = Objects.toString(id.getOrDefault("name", ""), "");
+
+			String cluster = Objects.toString(app.get("cluster"), "");
+			String category = Objects.toString(app.get("category"), "");
+			String status = Objects.toString(app.get("status"), "");
+
+			Map<String, Object> indicators = new HashMap<>();
+			for (String key : List.of("errors", "latency", "upstreams", "instances", "restarts", "cpu", "memory",
+					"disk_io_load", "disk_usage", "network", "dns", "logs")) {
+				Map<String, Object> param = (Map<String, Object>) app.getOrDefault(key, Map.of());
+				if (!param.isEmpty()) {
+					Map<String, Object> summary = new HashMap<>();
+					summary.put("status", Objects.toString(param.get("status"), ""));
+					summary.put("value", Objects.toString(param.get("value"), ""));
+					indicators.put(key, summary);
+				}
+			}
+
+			result.add(new ApplicationOverviewEntry(projectId, service, cluster, category, status, indicators));
 		}
 
 		return result;

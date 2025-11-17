@@ -198,6 +198,8 @@ The MCP server exposes tools via `tools/list` and `tools/call`. Currently implem
   - Accepts optional filters: project ID, minimum severity, and result limit.
 - `list_projects`
   - Returns a JSON array of Coroot projects that the current API key can access, matching the Coroot projects visible in the UI for the current user.
+- `get_applications_overview`
+  - Returns an overview of application health for a Coroot project, aligned with the Application Health Summary view surfaced in the Coroot UI.
 - `get_incident_details`
   - Returns detailed Coroot incident context (summary, suspected root cause, affected services, metrics, and timeline) as described in the incidents documentation.
 - `summarize_incident_root_cause`

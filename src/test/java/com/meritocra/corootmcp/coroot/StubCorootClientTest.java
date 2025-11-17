@@ -54,4 +54,15 @@ class StubCorootClientTest {
 		assertThat(projects).isNotEmpty();
 		assertThat(projects.get(0).getId()).isNotBlank();
 	}
+
+	@Test
+	void givenProject_whenListingApplicationsOverview_thenReturnsEntries() {
+		// when
+		List<ApplicationOverviewEntry> apps = client.listApplicationsOverview("production");
+
+		// then
+		assertThat(apps).isNotEmpty();
+		assertThat(apps.get(0).getService()).isNotBlank();
+		assertThat(apps.get(0).getIndicators()).isNotEmpty();
+	}
 }
