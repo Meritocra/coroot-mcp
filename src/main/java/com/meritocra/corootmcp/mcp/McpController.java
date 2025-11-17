@@ -85,7 +85,7 @@ public class McpController {
 
 		ObjectNode serverInfo = result.putObject("serverInfo");
 		serverInfo.put("name", "coroot-mcp");
-		serverInfo.put("version", "0.1.0");
+		serverInfo.put("version", "0.2.0");
 		serverInfo.put("description",
 				"MCP server that exposes Coroot root-cause analysis context as tools for LLM assistants.");
 

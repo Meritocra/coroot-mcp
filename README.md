@@ -112,7 +112,7 @@ If `MCP_AUTH_TOKEN` is set, clients must send:
 
 Once an image is published to a registry such as GitHub Container Registry, you can run it directly. For example, assuming:
 
-- Image: `ghcr.io/meritocra/coroot-mcp:0.1.0`
+- Image: `ghcr.io/meritocra/coroot-mcp:0.2.0`
 
 Run against a real Coroot instance:
 
@@ -122,7 +122,7 @@ docker run --rm -p 8080:8080 \
   -e MCP_AUTH_TOKEN=some-secret-token \
   -e COROOT_API_URL=https://coroot.your-company.com \
   -e COROOT_DEFAULT_PROJECT_ID=production \
-  ghcr.io/meritocra/coroot-mcp:0.1.0
+  ghcr.io/meritocra/coroot-mcp:0.2.0
 ```
 
 Run in stub mode (no Coroot required):
@@ -131,7 +131,7 @@ Run in stub mode (no Coroot required):
 docker run --rm -p 8080:8080 \
   -e MCP_AUTH_TOKEN=some-secret-token \
   -e SPRING_PROFILES_ACTIVE=stub-coroot \
-  ghcr.io/meritocra/coroot-mcp:0.1.0
+  ghcr.io/meritocra/coroot-mcp:0.2.0
 ```
 
 ### Building the image locally

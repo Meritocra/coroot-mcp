@@ -1,6 +1,6 @@
 {
   "name": "coroot-mcp",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MCP server that exposes Coroot root-cause analysis and incident context as tools for assistants.",
   "license": "MIT",
   "homepageUrl": "https://github.com/Meritocra/coroot-mcp",
