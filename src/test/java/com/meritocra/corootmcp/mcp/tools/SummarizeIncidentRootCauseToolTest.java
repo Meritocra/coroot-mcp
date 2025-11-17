@@ -32,34 +32,41 @@ class SummarizeIncidentRootCauseToolTest {
 	}
 
 	@Test
-	void definitionContainsExpectedNameAndSchema() {
+	void givenTool_whenReadingDefinition_thenContainsExpectedNameAndSchema() {
+		// when
 		var definition = tool.definition();
 
+		// then
 		assertThat(definition.getName()).isEqualTo("summarize_incident_root_cause");
 		assertThat(definition.getInputSchema().path("type").asText()).isEqualTo("object");
 		assertThat(definition.getInputSchema().path("properties").has("incidentId")).isTrue();
 	}
 
 	@Test
-	void failsWhenIncidentIdMissing() {
+	void givenMissingIncidentId_whenCallingTool_thenFailsWithHelpfulError() {
+		// given
 		ObjectNode args = objectMapper.createObjectNode();
 		args.put("projectId", "production");
 
+		// when / then
 		assertThatThrownBy(() -> tool.call(args))
 				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessageContaining("incidentId is required");
 	}
 
 	@Test
-	void returnsTextAndJsonItems() {
+	void givenValidArguments_whenCallingTool_thenReturnsTextAndJsonItems() {
+		// given
 		ObjectNode args = objectMapper.createObjectNode();
 		args.put("projectId", "production");
 		args.put("incidentId", "inc-1");
 		args.put("maxWords", 100);
 		args.put("includeMetricsTable", true);
 
+		// when
 		ObjectNode result = tool.call(args);
 
+		// then
 		var content = result.path("content");
 		assertThat(content.isArray()).isTrue();
 		assertThat(content).hasSize(2);
