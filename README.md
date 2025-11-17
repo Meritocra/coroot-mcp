@@ -285,3 +285,11 @@ This repository includes a tag-based release workflow:
 For example, tag `v0.2.0` produces:
 
 - `ghcr.io/meritocra/coroot-mcp:0.2.0`
+
+## License & attribution
+
+- This repository (`coroot-mcp`) is licensed under the MIT License (see `LICENSE`).
+- It integrates with Coroot Community Edition, which is licensed under Apache-2.0:
+  - Coroot repo: https://github.com/coroot/coroot
+  - License: Apache License, Version 2.0.
+- This MCP server is a community-maintained integration and is not an official Coroot product or endorsement.
