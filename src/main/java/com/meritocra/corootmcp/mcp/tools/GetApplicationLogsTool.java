@@ -62,8 +62,8 @@ public class GetApplicationLogsTool implements McpTool {
 		maxEntries.put("description",
 				"Maximum number of log entries to return, capped at " + MAX_ENTRIES_CAP + ".");
 
-		ObjectNode required = schema.putArray("required").addObject();
-		required.put("0", "applicationId");
+		ArrayNode required = schema.putArray("required");
+		required.add("applicationId");
 
 		schema.put("additionalProperties", false);
 
@@ -170,4 +170,3 @@ public class GetApplicationLogsTool implements McpTool {
 	}
 
 }
-
