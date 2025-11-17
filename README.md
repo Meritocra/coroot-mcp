@@ -22,33 +22,6 @@ The MCP JSON-RPC endpoint will be available at:
 
 - `POST http://localhost:8080/mcp`
 
-From another terminal, you can send a basic `initialize` request:
-
-```bash
-curl -s http://localhost:8080/mcp \
-  -H 'Content-Type: application/json' \
-  # -H 'Authorization: Bearer some-secret-token' \  # if MCP_AUTH_TOKEN is set
-  -d '{
-    "jsonrpc": "2.0",
-    "id": "init-1",
-    "method": "initialize",
-    "params": {}
-  }'
-```
-
-And list tools:
-
-```bash
-curl -s http://localhost:8080/mcp \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": "tools-1",
-    "method": "tools/list",
-    "params": {}
-  }'
-```
-
 ## What this MCP server does
 
 - Exposes Coroot [incidents](https://docs.coroot.com/alerting/incidents/) and [application health summaries](https://github.com/coroot/coroot#application-health-summary) as MCP tools that an AI assistant can call.
