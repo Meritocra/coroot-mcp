@@ -23,4 +23,6 @@ public interface CorootClient {
 
 	Map<String, Object> getTracesOverview(String projectId, String query);
 
+	Map<String, Object> getLogsOverview(String projectId, String query);
+
 }

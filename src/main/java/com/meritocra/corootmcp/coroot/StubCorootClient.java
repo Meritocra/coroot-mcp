@@ -97,4 +97,14 @@ public class StubCorootClient implements CorootClient {
 						Map.of("service", "checkout-service", "p95LatencyMs", 240, "errorRatePercent", 2.3),
 						Map.of("service", "catalog-service", "p95LatencyMs", 120, "errorRatePercent", 0.4)));
 	}
+
+	@Override
+	public Map<String, Object> getLogsOverview(String projectId, String query) {
+		return Map.of(
+				"projectId", projectId,
+				"summary", Map.of("linesPerMinute", 1500, "errorLinesPerMinute", 120),
+				"topStreams", List.of(
+						Map.of("service", "checkout-service", "level", "ERROR", "linesPerMinute", 80),
+						Map.of("service", "catalog-service", "level", "WARN", "linesPerMinute", 40)));
+	}
 }

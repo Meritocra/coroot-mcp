@@ -107,4 +107,14 @@ class StubCorootClientTest {
 		assertThat(overview).isNotEmpty();
 		assertThat(overview.get("projectId")).isEqualTo("production");
 	}
+
+	@Test
+	void givenProject_whenGettingLogsOverview_thenReturnsOverviewMap() {
+		// when
+		Map<String, Object> overview = client.getLogsOverview("production", "service:checkout");
+
+		// then
+		assertThat(overview).isNotEmpty();
+		assertThat(overview.get("projectId")).isEqualTo("production");
+	}
 }
