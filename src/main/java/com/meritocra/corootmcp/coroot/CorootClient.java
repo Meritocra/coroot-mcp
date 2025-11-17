@@ -13,4 +13,6 @@ public interface CorootClient {
 	List<ProjectSummary> listProjects();
 
 	List<ApplicationOverviewEntry> listApplicationsOverview(String projectId);
+
+	List<RiskOverviewEntry> listRisksOverview(String projectId);
 }

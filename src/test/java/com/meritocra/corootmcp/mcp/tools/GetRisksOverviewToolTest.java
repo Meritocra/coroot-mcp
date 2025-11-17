@@ -13,11 +13,11 @@ import com.meritocra.corootmcp.coroot.StubCorootClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class GetServiceHealthToolTest {
+class GetRisksOverviewToolTest {
 
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
-	private GetServiceHealthTool tool;
+	private GetRisksOverviewTool tool;
 
 	@BeforeEach
 	void setUp() {
@@ -25,7 +25,7 @@ class GetServiceHealthToolTest {
 		properties.setApiUrl(URI.create("https://coroot.example.com"));
 		properties.setDefaultProjectId("production");
 
-		tool = new GetServiceHealthTool(new StubCorootClient(), properties, objectMapper);
+		tool = new GetRisksOverviewTool(new StubCorootClient(), properties, objectMapper);
 	}
 
 	@Test
@@ -34,29 +34,30 @@ class GetServiceHealthToolTest {
 		var definition = tool.definition();
 
 		// then
-		assertThat(definition.getName()).isEqualTo("get_service_health");
+		assertThat(definition.getName()).isEqualTo("get_risks_overview");
 		assertThat(definition.getInputSchema().path("type").asText()).isEqualTo("object");
-		assertThat(definition.getInputSchema().path("properties").has("service")).isTrue();
 	}
 
 	@Test
-	void givenMissingService_whenCallingTool_thenFailsWithHelpfulError() {
+	void givenNoProjectIdAndNoDefault_whenCallingTool_thenFailsWithHelpfulError() {
 		// given
+		CorootProperties emptyProps = new CorootProperties();
+		GetRisksOverviewTool toolWithoutDefault = new GetRisksOverviewTool(
+				new StubCorootClient(), emptyProps, objectMapper);
+
 		ObjectNode args = objectMapper.createObjectNode();
-		args.put("projectId", "production");
 
 		// when / then
-		assertThatThrownBy(() -> tool.call(args))
+		assertThatThrownBy(() -> toolWithoutDefault.call(args))
 				.isInstanceOf(IllegalArgumentException.class)
-				.hasMessageContaining("service is required");
+				.hasMessageContaining("projectId is required");
 	}
 
 	@Test
-	void givenValidArguments_whenCallingTool_thenReturnsJsonSnapshot() {
+	void givenValidArguments_whenCallingTool_thenReturnsRisksOverviewJson() {
 		// given
 		ObjectNode args = objectMapper.createObjectNode();
 		args.put("projectId", "production");
-		args.put("service", "checkout-service");
 
 		// when
 		ObjectNode result = tool.call(args);
@@ -68,10 +69,14 @@ class GetServiceHealthToolTest {
 
 		var jsonItem = content.get(0);
 		assertThat(jsonItem.path("type").asText()).isEqualTo("json");
-		var json = jsonItem.path("json");
-		assertThat(json.path("projectId").asText()).isEqualTo("production");
-		assertThat(json.path("service").asText()).isEqualTo("checkout-service");
-		assertThat(json.has("indicators")).isTrue();
+		assertThat(jsonItem.path("json").isArray()).isTrue();
+		assertThat(jsonItem.path("json")).isNotEmpty();
+
+		var first = jsonItem.path("json").get(0);
+		assertThat(first.path("projectId").asText()).isEqualTo("production");
+		assertThat(first.path("service").asText()).isNotBlank();
+		assertThat(first.path("severity").asText()).isNotBlank();
+		assertThat(first.has("exposure")).isTrue();
 	}
 
 }

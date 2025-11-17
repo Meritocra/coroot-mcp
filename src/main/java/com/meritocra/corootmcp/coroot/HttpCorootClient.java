@@ -186,6 +186,49 @@ public class HttpCorootClient implements CorootClient {
 		return result;
 	}
 
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<RiskOverviewEntry> listRisksOverview(String projectId) {
+		Assert.hasText(projectId, "projectId must not be empty");
+
+		Map<String, Object> response = restClient.get()
+				.uri("/api/project/{projectId}/overview/risks", projectId)
+				.retrieve()
+				.body(Map.class);
+
+		List<Map<String, Object>> risks = (List<Map<String, Object>>) response.getOrDefault("risks", List.of());
+
+		List<RiskOverviewEntry> result = new ArrayList<>();
+		for (Map<String, Object> risk : risks) {
+			Map<String, Object> appId = (Map<String, Object>) risk.getOrDefault("application_id", Map.of());
+			String service = Objects.toString(appId.getOrDefault("name", ""), "");
+
+			String cluster = Objects.toString(risk.get("cluster"), "");
+			String category = Objects.toString(risk.get("application_category"), "");
+			String severity = Objects.toString(risk.get("severity"), "");
+			String type = Objects.toString(risk.get("type"), "");
+
+			Map<String, Object> exposure = (Map<String, Object>) risk.getOrDefault("exposure", Map.of());
+			Map<String, Object> exposureCopy = new HashMap<>();
+			if (!exposure.isEmpty()) {
+				for (String key : List.of("ips", "ports", "node_port_services", "load_balancer_services")) {
+					Object value = exposure.get(key);
+					if (value != null) {
+						exposureCopy.put(key, value);
+					}
+				}
+			}
+
+			Map<String, Object> availability = (Map<String, Object>) risk.getOrDefault("availability", Map.of());
+			String availabilityDescription = Objects.toString(availability.get("description"), "");
+
+			result.add(new RiskOverviewEntry(projectId, service, cluster, category, severity, type, exposureCopy,
+					availabilityDescription));
+		}
+
+		return result;
+	}
+
 	@SuppressWarnings("unchecked")
 	private IncidentContext toIncidentContext(Map<String, Object> payload) {
 		IncidentSummary summary = toIncidentSummary((Map<String, Object>) payload.get("summary"));

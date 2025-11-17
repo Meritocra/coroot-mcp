@@ -62,4 +62,13 @@ public class StubCorootClient implements CorootClient {
 
 		return List.of(first, second);
 	}
+
+	@Override
+	public List<RiskOverviewEntry> listRisksOverview(String projectId) {
+		RiskOverviewEntry risk = new RiskOverviewEntry(projectId, "checkout-service", "cluster-1", "web", "CRITICAL",
+				"publicly_exposed",
+				Map.of("ips", List.of("203.0.113.10"), "ports", List.of("443")), "Single AZ deployment");
+
+		return List.of(risk);
+	}
 }
