@@ -30,5 +30,4 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Run tests
-        run: ./mvnw -B test
-
+        run: ./mvnw -B test jacoco:report
