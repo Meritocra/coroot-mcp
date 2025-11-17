@@ -196,6 +196,8 @@ The MCP server exposes tools via `tools/list` and `tools/call`. Currently implem
 - `list_recent_incidents`
   - Returns a JSON array of recent incidents with id, title, service, severity, and timestamps.
   - Accepts optional filters: project ID, minimum severity, and result limit.
+- `get_incident_details`
+  - Returns detailed Coroot incident context (summary, suspected root cause, affected services, metrics, and timeline) as described in the incidents documentation.
 - `summarize_incident_root_cause`
   - Generates a natural-language explanation of an incident’s likely root cause, blast radius, and remediation steps.
   - Returns both human-readable text and a structured JSON representation of the incident context.
