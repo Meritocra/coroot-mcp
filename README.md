@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Java](https://img.shields.io/badge/Java-21%2B-blue.svg)](pom.xml)
 
-[Docs](#what-this-mcp-server-does) · [Coroot](https://coroot.com) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md)
+[Docs](#what-this-mcp-server-does) · [Coroot](https://coroot.com) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [MCP manifest](mcp.json)
 
 Coroot MCP is a Model Context Protocol (MCP) server that turns your [Coroot](https://github.com/coroot/coroot) observability stack into a set of well-typed tools an LLM assistant can call for root-cause analysis.
 
