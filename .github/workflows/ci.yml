@@ -29,6 +29,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Run Checkstyle
+        run: ./mvnw -B checkstyle:check
+
       - name: Run tests
         run: ./mvnw -B test jacoco:report
 
