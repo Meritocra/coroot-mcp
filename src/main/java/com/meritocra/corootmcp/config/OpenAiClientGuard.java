@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
- * Fails fast when the application is running against a real Coroot backend
+ * Logs a warning when the application is running against a real Coroot backend
  * but the OpenAI API key is not configured.
  *
  * <p>
@@ -33,11 +33,9 @@ public class OpenAiClientGuard implements SmartInitializingSingleton {
 	@Override
 	public void afterSingletonsInstantiated() {
 		if (!StringUtils.hasText(properties.getApiKey())) {
-			logger.error("OPENAI_API_KEY (spring.ai.openai.api-key) must be configured to use summarization tools.");
-			throw new IllegalStateException(
-					"OPENAI_API_KEY (spring.ai.openai.api-key) must be configured to use summarization tools.");
+			logger.warn("OPENAI_API_KEY (spring.ai.openai.api-key) is not configured. "
+					+ "Summarization tools depending on Spring AI will fail when called.");
 		}
 	}
 
 }
-
